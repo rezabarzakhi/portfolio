@@ -1,0 +1,61 @@
+services:
+  database:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: portfolio
+      POSTGRES_USER: portfolio
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U portfolio -d portfolio"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  app:
+    image: rezabarzakhi-portfolio:latest
+    build:
+      context: .
+      network: host
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql://portfolio:${POSTGRES_PASSWORD}@database:5432/portfolio?schema=public
+    volumes:
+      - ./data/uploads:/app/public/uploads
+    depends_on:
+      initialize:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:3000/fa || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 20s
+
+  initialize:
+    image: rezabarzakhi-portfolio:latest
+    restart: "no"
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql://portfolio:${POSTGRES_PASSWORD}@database:5432/portfolio?schema=public
+    command: ["sh", "-c", "npx prisma migrate deploy && npm run db:seed"]
+    depends_on:
+      database:
+        condition: service_healthy
+
+  nginx:
+    image: nginx:1.27-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      - ./deploy/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      app:
+        condition: service_healthy
+
+volumes:
+  postgres_data:

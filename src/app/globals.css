@@ -1,0 +1,308 @@
+@import "tailwindcss";
+
+:root {
+  --background: #030712;
+  --surface: #111827;
+  --surface-soft: #1f2937;
+  --border: #374151;
+  --foreground: #f9fafb;
+  --muted: #d1d5db;
+  --accent: #d1d5db;
+  --accent-deep: #374151;
+  --header: rgba(3, 7, 18, 0.95);
+  --field: #0b1220;
+  color-scheme: dark;
+}
+
+html[data-theme="light"] {
+  --background: #f9fafb;
+  --surface: #f3f4f6;
+  --surface-soft: #ffffff;
+  --border: #d1d5db;
+  --foreground: #111827;
+  --muted: #4b5563;
+  --accent: #374151;
+  --accent-deep: #e5e7eb;
+  --header: rgba(249, 250, 251, 0.95);
+  --field: #ffffff;
+  color-scheme: light;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-vazirmatn);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  background: var(--background);
+}
+
+body {
+  min-height: 100vh;
+  margin: 0;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-vazirmatn), sans-serif;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--accent) 35%, transparent);
+  color: white;
+}
+
+a,
+button,
+input,
+textarea {
+  outline-color: var(--accent);
+}
+
+.site-shell {
+  min-height: 100vh;
+  overflow: clip;
+  background: var(--background);
+}
+
+.theme-header {
+  background: var(--header);
+}
+
+.theme-light-icon {
+  display: none;
+}
+
+html[data-theme="light"] .theme-light-icon {
+  display: block;
+}
+
+html[data-theme="light"] .theme-dark-icon {
+  display: none;
+}
+
+.section-alt {
+  background: var(--surface);
+}
+
+.image-frame {
+  border-color: var(--background);
+}
+
+.container-shell {
+  width: min(100% - 2rem, 72rem);
+  margin-inline: auto;
+}
+
+.section-space {
+  padding-block: clamp(4rem, 8vw, 6rem);
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  margin-bottom: 1rem;
+  border-radius: 0.75rem;
+  background: #374151;
+  padding: 0.35rem 1rem;
+  color: #f3f4f6;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+}
+
+.display-title {
+  max-width: 17ch;
+  font-size: clamp(2.35rem, 6vw, 3.75rem);
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.03em;
+}
+
+[dir="rtl"] .display-title {
+  letter-spacing: -0.025em;
+}
+
+.section-title {
+  max-width: 20ch;
+  font-size: clamp(1.8rem, 4vw, 2.55rem);
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.03em;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.surface {
+  border: 1px solid var(--border);
+  background: var(--surface-soft);
+  box-shadow: 0 20px 55px rgba(0, 0, 0, 0.16);
+}
+
+.button-primary,
+.button-secondary {
+  display: inline-flex;
+  min-height: 3rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  border-radius: 0.8rem;
+  padding-inline: 1.2rem;
+  font-size: 0.9rem;
+  font-weight: 700;
+  transition: transform 180ms ease, border-color 180ms ease, background 180ms ease;
+}
+
+.button-primary {
+  border: 1px solid #4b5563;
+  background: #374151;
+  color: #f9fafb;
+}
+
+.button-secondary {
+  border: 1px solid var(--border);
+  background: var(--surface-soft);
+  color: var(--foreground);
+}
+
+.button-primary:hover,
+.button-secondary:hover {
+  transform: translateY(-2px);
+}
+
+.button-primary:hover {
+  background: #4b5563;
+}
+
+.button-secondary:hover {
+  border-color: var(--accent);
+}
+
+.grid-lines {
+  background:
+    radial-gradient(circle at 15% 25%, rgba(55, 65, 81, 0.26), transparent 22rem),
+    var(--background);
+}
+
+.prose-content {
+  color: #d1d5db;
+  font-size: 1.05rem;
+  line-height: 2;
+}
+
+.prose-content p + p {
+  margin-top: 1.5rem;
+}
+
+.admin-editor h2,
+.prose-content h2 {
+  margin-block: 2rem 0.8rem;
+  color: var(--foreground);
+  font-size: 1.7rem;
+  font-weight: 700;
+}
+
+.admin-editor h3,
+.prose-content h3 {
+  margin-block: 1.5rem 0.6rem;
+  color: var(--foreground);
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+
+.admin-editor ul,
+.admin-editor ol,
+.prose-content ul,
+.prose-content ol {
+  margin-block: 1rem;
+  padding-inline-start: 1.5rem;
+}
+
+.admin-editor ul,
+.prose-content ul { list-style: disc; }
+.admin-editor ol,
+.prose-content ol { list-style: decimal; }
+
+.admin-editor blockquote,
+.prose-content blockquote {
+  margin-block: 1.5rem;
+  border-inline-start: 3px solid #6b7280;
+  padding-inline-start: 1rem;
+  color: var(--muted);
+}
+
+.admin-editor pre,
+.prose-content pre {
+  direction: ltr;
+  margin-block: 1.5rem;
+  overflow-x: auto;
+  border-radius: 0.75rem;
+  background: #030712;
+  padding: 1rem;
+  color: #e5e7eb;
+  font-family: monospace;
+}
+
+.admin-editor img,
+.prose-content img {
+  max-width: 100%;
+  height: auto;
+  margin-block: 1.5rem;
+  border-radius: 0.75rem;
+}
+
+.form-field {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  background: var(--field);
+  padding: 0.85rem 1rem;
+  color: var(--foreground);
+  transition: border-color 180ms ease;
+}
+
+html[data-theme="light"] .text-gray-200 { color: #1f2937; }
+html[data-theme="light"] .text-gray-300 { color: #374151; }
+html[data-theme="light"] .text-gray-400 { color: #4b5563; }
+html[data-theme="light"] .text-gray-500 { color: #6b7280; }
+html[data-theme="light"] .text-gray-600 { color: #6b7280; }
+html[data-theme="light"] .bg-gray-800 { background-color: #e5e7eb; }
+html[data-theme="light"] .bg-gray-900 { background-color: #e5e7eb; }
+html[data-theme="light"] .border-white\/5 { border-color: #e5e7eb; }
+html[data-theme="light"] .border-white\/10 { border-color: #d1d5db; }
+html[data-theme="light"] .bg-white\/5 { background-color: #e5e7eb; }
+html[data-theme="light"] .hover\:text-white:hover { color: #111827; }
+
+
+.form-field:focus {
+  border-color: var(--accent);
+  outline: none;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 0.45rem;
+  color: #d1d5db;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}

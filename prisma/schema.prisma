@@ -1,0 +1,129 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  username     String   @unique
+  passwordHash String
+  name         String   @default("Reza Barzakhi")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model SiteSetting {
+  id              String   @id @default("main")
+  nameFa          String
+  nameEn          String
+  roleFa          String
+  roleEn          String
+  introFa         String   @db.Text
+  introEn         String   @db.Text
+  aboutFa         String   @db.Text
+  aboutEn         String   @db.Text
+  locationFa      String
+  locationEn      String
+  email           String
+  phone           String
+  availabilityFa  String
+  availabilityEn  String
+  heroImage       String
+  aboutImage      String
+  resumeUrl       String?
+  githubUrl       String?
+  instagramUrl    String?
+  telegramUrl     String?
+  twitterUrl      String?
+  seoDescriptionFa String  @db.Text
+  seoDescriptionEn String  @db.Text
+  updatedAt       DateTime @updatedAt
+}
+
+model Skill {
+  id        String   @id @default(cuid())
+  name      String
+  level     Int      @default(80)
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Project {
+  id            String   @id @default(cuid())
+  slug          String   @unique
+  titleFa       String
+  titleEn       String
+  summaryFa     String   @db.Text
+  summaryEn     String   @db.Text
+  contentFa     String   @db.Text
+  contentEn     String   @db.Text
+  imageUrl      String
+  technologies  String
+  liveUrl       String?
+  repositoryUrl String?
+  completedAt   DateTime?
+  featured      Boolean  @default(false)
+  published     Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Post {
+  id            String   @id @default(cuid())
+  slug          String   @unique
+  titleFa       String
+  titleEn       String
+  excerptFa     String   @db.Text
+  excerptEn     String   @db.Text
+  contentFa     String   @db.Text
+  contentEn     String   @db.Text
+  categoryFa    String
+  categoryEn    String
+  tags          String   @default("")
+  imageUrl      String
+  imageAltFa    String   @default("")
+  imageAltEn    String   @default("")
+  seoTitleFa    String   @default("")
+  seoTitleEn    String   @default("")
+  seoDescriptionFa String @db.Text
+  seoDescriptionEn String @db.Text
+  canonicalUrl  String?
+  featured      Boolean  @default(false)
+  allowIndex    Boolean  @default(true)
+  published     Boolean  @default(false)
+  publishedAt   DateTime?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Experience {
+  id          String   @id @default(cuid())
+  titleFa     String
+  titleEn     String
+  organizationFa String
+  organizationEn String
+  periodFa    String
+  periodEn    String
+  descriptionFa String @db.Text
+  descriptionEn String @db.Text
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model ContactMessage {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  subject   String
+  message   String   @db.Text
+  locale    String   @default("fa")
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
