@@ -1,0 +1,17 @@
+rezabarzakhi.ir, www.rezabarzakhi.ir {
+    tls internal
+    encode zstd gzip
+
+    request_body {
+        max_size 8MB
+    }
+
+    header {
+        -Server
+        X-Content-Type-Options "nosniff"
+        Referrer-Policy "strict-origin-when-cross-origin"
+        Strict-Transport-Security "max-age=31536000"
+    }
+
+    reverse_proxy portfolio-nextjs:3000
+}

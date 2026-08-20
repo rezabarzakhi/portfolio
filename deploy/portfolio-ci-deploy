@@ -1,0 +1,81 @@
+#!/usr/bin/env sh
+set -eu
+
+image="${1:-}"
+project_dir=/opt/stacks/portfolio
+compose_file="$project_dir/docker-compose.production.yml"
+env_file="$project_dir/.env"
+
+if ! printf '%s\n' "$image" | grep -Eq '^docker\.io/[a-z0-9][a-z0-9_.-]*/portfolio:[0-9a-f]{40}$'; then
+  echo "Invalid deployment image: $image"
+  exit 1
+fi
+
+if [ ! -f "$compose_file" ] || [ ! -f "$env_file" ]; then
+  echo "The production stack is not installed in $project_dir."
+  exit 1
+fi
+
+compose() {
+  docker compose --env-file "$env_file" -f "$compose_file" "$@"
+}
+
+backup="$(mktemp)"
+updated="$(mktemp)"
+trap 'rm -f "$backup" "$updated"' EXIT
+cp -p "$env_file" "$backup"
+
+restore_previous_release() {
+  cp -p "$backup" "$env_file"
+  compose up -d --no-deps app || true
+}
+
+echo "Pulling $image..."
+docker pull "$image"
+
+awk -v image="$image" '
+  BEGIN { found = 0 }
+  /^APP_IMAGE=/ { print "APP_IMAGE=" image; found = 1; next }
+  { print }
+  END { if (!found) print "APP_IMAGE=" image }
+' "$env_file" > "$updated"
+cat "$updated" > "$env_file"
+chmod 600 "$env_file"
+
+echo "Applying database migrations..."
+if ! compose run --rm initialize; then
+  restore_previous_release
+  echo "Migration failed; the previous application image remains active."
+  exit 1
+fi
+
+echo "Starting the new application image..."
+if ! compose up -d --no-deps app; then
+  restore_previous_release
+  echo "Application start failed; restored the previous image."
+  exit 1
+fi
+
+attempt=0
+while [ "$attempt" -lt 30 ]; do
+  container_id="$(compose ps -q app)"
+  status="$(docker inspect -f '{{if .State.Health}}{{.State.Health.Status}}{{else}}{{.State.Status}}{{end}}' "$container_id" 2>/dev/null || true)"
+
+  if [ "$status" = healthy ]; then
+    echo "Deployment completed: $image"
+    docker image prune -f >/dev/null
+    exit 0
+  fi
+
+  if [ "$status" = unhealthy ] || [ "$status" = exited ] || [ "$status" = dead ]; then
+    break
+  fi
+
+  attempt=$((attempt + 1))
+  sleep 2
+done
+
+compose logs --tail=100 app || true
+restore_previous_release
+echo "The new application did not become healthy; restored the previous image."
+exit 1

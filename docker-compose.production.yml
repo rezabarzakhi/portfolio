@@ -1,0 +1,58 @@
+services:
+  database:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: portfolio
+      POSTGRES_USER: portfolio
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U portfolio -d portfolio"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  initialize:
+    image: ${APP_IMAGE:-rezabarzakhi-portfolio:latest}
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql://portfolio:${POSTGRES_PASSWORD}@database:5432/portfolio?schema=public
+    command: ["npx", "prisma", "migrate", "deploy"]
+    depends_on:
+      database:
+        condition: service_healthy
+    restart: "no"
+
+  app:
+    image: ${APP_IMAGE:-rezabarzakhi-portfolio:latest}
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql://portfolio:${POSTGRES_PASSWORD}@database:5432/portfolio?schema=public
+      NEXT_PUBLIC_SITE_URL: https://rezabarzakhi.ir
+    volumes:
+      - ./data/uploads:/app/public/uploads
+    depends_on:
+      initialize:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:3000/fa || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    networks:
+      default:
+      proxy:
+        aliases:
+          - portfolio-nextjs
+
+volumes:
+  postgres_data:
+
+networks:
+  proxy:
+    external: true
+    name: ${PROXY_NETWORK:-proxy}

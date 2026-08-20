@@ -40,6 +40,11 @@ yarn-error.log*
 
 # runtime data and backups
 /data/
+/release/
+
+# exported container images
+/*.tar
+/*.tar.gz
 
 # machine-specific WSL helpers
 /start-local.cmd

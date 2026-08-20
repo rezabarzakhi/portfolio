@@ -4,8 +4,6 @@ WORKDIR /app
 ENV NPM_CONFIG_FETCH_RETRIES=5
 ENV NPM_CONFIG_FETCH_RETRY_MINTIMEOUT=20000
 ENV NPM_CONFIG_FETCH_RETRY_MAXTIMEOUT=120000
-ENV NPM_CONFIG_REGISTRY=https://registry.npmmirror.com
-ENV PRISMA_ENGINES_MIRROR=https://registry.npmmirror.com/-/binary/prisma
 COPY package.json package-lock.json ./
 COPY prisma/schema.prisma ./prisma/schema.prisma
 RUN --mount=type=cache,target=/root/.npm npm ci --legacy-peer-deps

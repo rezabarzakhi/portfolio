@@ -1,0 +1,13 @@
+#!/usr/bin/env sh
+set -eu
+
+case "${SSH_ORIGINAL_COMMAND:-}" in
+  "deploy "*)
+    image="${SSH_ORIGINAL_COMMAND#deploy }"
+    exec sudo /usr/local/sbin/portfolio-ci-deploy "$image"
+    ;;
+  *)
+    echo "This key may only deploy the portfolio application."
+    exit 1
+    ;;
+esac
