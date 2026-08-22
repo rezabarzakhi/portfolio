@@ -1,4 +1,4 @@
-name: Deploy production
+name: Validate and deploy
 
 on:
   push:
@@ -40,6 +40,7 @@ jobs:
 
   build:
     needs: validate
+    if: ${{ vars.ENABLE_PRODUCTION_DEPLOY == 'true' }}
     runs-on: ubuntu-latest
     steps:
       - name: Check out source

@@ -1,131 +1,57 @@
-<div align="center">
+# Reza Barzakhi Portfolio
 
-# `<RB />` Personal Portfolio
+This repository contains the custom portfolio and publishing platform I built for my own website. I wanted one place for project case studies, articles, resume content, and contact messages without depending on a separate CMS, so I designed both the public website and its administration area as a single Next.js application.
 
-### A bilingual portfolio, publishing platform, and content management system
+The public interface is available in Persian and English. Persian pages use a proper RTL layout rather than mirroring isolated components, while English pages remain LTR. Most content can be maintained from the protected administration area without editing source files.
 
-وب‌سایت شخصی دوزبانه رضا برزخی با پنل مدیریت اختصاصی، وبلاگ، رزومه، نمونه‌کار و فرم تماس
+## Main features
 
-[![Next.js](https://img.shields.io/badge/Next.js-16-030712?style=for-the-badge&logo=nextdotjs)](https://nextjs.org/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-17-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
-[![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?style=for-the-badge&logo=docker&logoColor=white)](https://www.docker.com/)
+- Persian and English routes with RTL and LTR layouts
+- Responsive public pages for projects, articles, resume, and contact
+- Light and dark themes with a saved user preference
+- Protected administration area built with Auth.js
+- Profile, skills, projects, articles, resume, and message management
+- Rich-text article editor with separate Persian and English content
+- Draft and published states for projects and articles
+- Contact form storage with optional email notification
+- Persistent uploads for project images and resume files
+- Metadata, Open Graph data, `sitemap.xml`, and `robots.txt`
+- Docker-based production setup with PostgreSQL and Nginx
+- Backup, restore, and deployment scripts
 
-</div>
+## Tech stack
 
----
-
-<div dir="rtl">
-
-## معرفی
-
-این پروژه بازنویسی کامل وب‌سایت شخصی من از وردپرس به یک برنامه مدرن و مستقل است. هویت بصری و پالت تیره نسخه قبلی حفظ شده، اما ساختار فنی، سرعت، تجربه کاربری، مدیریت محتوا و قابلیت توسعه آن از ابتدا طراحی شده‌اند.
-
-سایت دارای نسخه فارسی راست‌چین و نسخه انگلیسی چپ‌چین است. تمام محتوای اصلی از پنل مدیریت اختصاصی قابل ویرایش است و برای مدیریت روزمره نیازی به تغییر مستقیم کد وجود ندارد.
-
-## امکانات اصلی
-
-- نسخه کامل فارسی و انگلیسی
-- پوسته روشن و تیره با ذخیره انتخاب کاربر
-- صفحه اصلی، درباره من، نمونه‌کارها، وبلاگ، رزومه و تماس
-- صفحه مستقل برای هر پروژه و مقاله
-- پنل مدیریت محافظت‌شده
-- مدیریت اطلاعات شخصی، مهارت‌ها، سوابق و شبکه‌های اجتماعی
-- مدیریت پروژه‌ها و وضعیت انتشار آن‌ها
-- مدیریت پیام‌های فرم تماس
-- ذخیره پیام‌ها در پایگاه داده و ارسال اختیاری ایمیل
-- بارگذاری تصویر و فایل رزومه روی فضای پایدار
-- نقشه سایت، فایل راهنمای خزنده‌ها و فراداده شبکه‌های اجتماعی
-- طراحی واکنش‌گرا برای موبایل، تبلت و دسکتاپ
-
-## پنل مدیریت
-
-پنل به بخش‌های مستقل تقسیم شده است:
-
-| بخش | کاربرد |
-|---|---|
-| پیشخوان | آمار محتوا و آخرین پیام‌ها |
-| اطلاعات اصلی | معرفی، تصاویر، تماس و شبکه‌های اجتماعی |
-| مهارت‌ها | میزان تسلط و ترتیب نمایش |
-| نمونه‌کارها | پروژه‌ها، فناوری‌ها و پیوندها |
-| مقاله‌ها | فهرست، پیش‌نویس، انتشار و ویرایش |
-| رزومه | سوابق کاری و آموزشی |
-| پیام‌ها | مشاهده، خواندن و حذف پیام‌های تماس |
-
-## ویرایشگر مقاله
-
-ویرایشگر اختصاصی مقاله برای محتوای فارسی و انگلیسی امکانات زیر را ارائه می‌دهد:
-
-- تیتر و زیرتیتر
-- متن درشت و مورب
-- فهرست معمولی و شماره‌دار
-- نقل‌قول و قطعه کد
-- درج پیوند و تصویر
-- بازگشت و انجام دوباره
-- شمارش واژه و تخمین زمان مطالعه
-- تصویر شاخص و متن جایگزین
-- دسته‌بندی و برچسب‌ها
-- تنظیم عنوان و توضیحات موتور جست‌وجو
-- نشانی مرجع، مقاله منتخب و کنترل نمایه‌سازی
-- انتخاب زمان و وضعیت انتشار
-
-محتوای تولیدشده پیش از نمایش پاک‌سازی می‌شود تا قالب‌بندی مجاز حفظ و کدهای اجرایی ناامن حذف شوند.
-
-</div>
-
-## Architecture
-
-```mermaid
-flowchart LR
-    Visitor[Visitor] --> Nginx[Nginx]
-    Nginx --> App[Next.js App]
-    Admin[Administrator] --> Nginx
-    App --> Auth[Auth.js]
-    App --> Prisma[Prisma ORM]
-    Prisma --> DB[(PostgreSQL)]
-    App --> Mail[SMTP / Nodemailer]
-    App --> Uploads[(Persistent Uploads)]
-```
-
-## Technology Stack
-
-| Layer | Technology |
-|---|---|
+| Area | Technology |
+| --- | --- |
 | Framework | Next.js App Router |
 | Language | TypeScript |
 | UI | React and Tailwind CSS |
 | Database | PostgreSQL |
 | ORM | Prisma |
-| Authentication | Auth.js credentials |
+| Authentication | Auth.js |
 | Validation | Zod |
 | Email | Nodemailer |
-| Reverse proxy | Nginx |
-| Deployment | Docker Compose |
+| Deployment | Docker Compose and Nginx |
 
-## Project Structure
+## Project structure
 
 ```text
 portfolio/
-├── deploy/                 # Nginx, deploy, backup, and restore scripts
-├── prisma/                 # Database schema, migrations, and seed data
-├── public/uploads/         # Persistent user uploads
+├── deploy/                 Nginx, deployment, backup, and restore files
+├── prisma/                 Schema, migrations, and seed data
+├── public/uploads/         Persistent user uploads
 ├── src/
-│   ├── app/                # Public pages, admin pages, and server actions
-│   ├── components/         # UI, forms, editor, navigation, and cards
-│   └── lib/                # Database, validation, email, and sanitization
-├── tests/                  # Automated content and validation tests
+│   ├── app/                Public routes, admin routes, and Server Actions
+│   ├── components/         Shared UI, forms, navigation, and editor
+│   └── lib/                Database, auth, validation, email, and sanitization
+├── tests/                  Content and validation tests
 ├── docker-compose.yml
 └── Dockerfile
 ```
 
-## Quick Start with Docker
+## Run with Docker
 
-### Requirements
-
-- Docker Engine with Docker Compose
-- Git
-
-### Setup
+You need Docker Engine, Docker Compose, and Git.
 
 ```bash
 git clone https://github.com/rezabarzakhi/portfolio.git
@@ -133,27 +59,22 @@ cd portfolio
 cp .env.example .env
 ```
 
-Replace every placeholder in `.env`, especially these values:
-
-```dotenv
-POSTGRES_PASSWORD="use-a-strong-password"
-AUTH_SECRET="generate-a-long-random-secret"
-ADMIN_EMAIL="admin@example.com"
-ADMIN_USERNAME="admin"
-ADMIN_PASSWORD="use-a-strong-password"
-NEXT_PUBLIC_SITE_URL="https://example.com"
-```
-
-Build and start the complete stack:
+Replace every placeholder in `.env`, especially the database password, Auth.js secret, administrator credentials, and public site URL. Then run:
 
 ```bash
 chmod +x deploy/*.sh
 ./deploy/deploy.sh
 ```
 
-Database migrations and initial seed data run automatically before the application starts.
+The application becomes available at:
 
-## Local Development
+```text
+http://localhost:3000/fa
+http://localhost:3000/en
+http://localhost:3000/admin/login
+```
+
+## Local development
 
 ```bash
 npm ci --legacy-peer-deps
@@ -163,81 +84,7 @@ npm run db:seed
 npm run dev
 ```
 
-Public website:
-
-```text
-http://localhost:3000/fa
-http://localhost:3000/en
-```
-
-Administration panel:
-
-```text
-http://localhost:3000/admin/login
-```
-
-## Environment Variables
-
-| Variable | Required | Description |
-|---|---:|---|
-| `DATABASE_URL` | Yes | PostgreSQL connection string |
-| `POSTGRES_PASSWORD` | Yes | Docker database password |
-| `AUTH_SECRET` | Yes | Session signing secret |
-| `ADMIN_EMAIL` | Yes | Administrator email |
-| `ADMIN_USERNAME` | Yes | Administrator username |
-| `ADMIN_PASSWORD` | Yes | Administrator password |
-| `NEXT_PUBLIC_SITE_URL` | Yes | Canonical production URL |
-| `SMTP_HOST` | No | SMTP server hostname |
-| `SMTP_PORT` | No | SMTP server port |
-| `SMTP_USER` | No | SMTP username |
-| `SMTP_PASSWORD` | No | SMTP password |
-| `MAIL_FROM` | No | Sender address |
-| `CONTACT_TO` | No | Contact form destination |
-
-Never commit `.env`. Only `.env.example` belongs in source control.
-
-## Available Commands
-
-```bash
-npm run dev          # Development server
-npm run build        # Production build
-npm run start        # Production server
-npm run lint         # ESLint checks
-npm run typecheck    # TypeScript checks
-npm test             # Automated tests
-npm run db:generate  # Generate Prisma Client
-npm run db:deploy    # Apply production migrations
-npm run db:seed      # Create initial content and administrator
-```
-
-## Backup and Restore
-
-Create a timestamped database and uploads backup:
-
-```bash
-./deploy/backup.sh
-```
-
-Restore both database and uploads:
-
-```bash
-./deploy/restore.sh \
-  data/backups/database-TIMESTAMP.dump \
-  data/backups/uploads-TIMESTAMP.tar.gz
-```
-
-## Quality and Security
-
-- Server-side validation for public and administrative forms
-- Password hashing with bcrypt
-- Protected administration routes
-- HTML sanitization for rich article content
-- Upload type and size validation
-- Contact form rate limiting and honeypot protection
-- Automated migration before application startup
-- Persistent database and upload volumes
-
-Run all quality checks before deployment:
+Before committing a change, I run the same checks used by GitHub Actions:
 
 ```bash
 npm run lint
@@ -246,20 +93,64 @@ npm test
 npm run build
 ```
 
-## Deployment Notes
+## Content and security decisions
 
-The included Compose stack runs PostgreSQL, the Next.js application, an initialization job, and Nginx. Before routing production traffic:
+Public and administrative forms are validated on the server. Passwords are hashed with bcrypt, administration routes require a valid session, and rich article content is sanitized before rendering. Uploads are restricted by file type and size. The contact form also includes rate limiting and a honeypot field.
 
-1. Set the production domain in `.env`.
-2. Configure SMTP if email notifications are required.
-3. Add TLS certificates with Certbot or the VPS certificate manager.
-4. Schedule `deploy/backup.sh` with cron.
-5. Back up both PostgreSQL data and `data/uploads` off-site.
+These controls reduce common risks, but they do not replace production monitoring, regular dependency updates, TLS, restricted database access, and off-site backups.
+
+## Deployment workflow
+
+Every push to `main` runs linting, type checking, and automated tests. Docker image publishing and server deployment are optional because they require private infrastructure credentials.
+
+To enable production deployment, add the required repository secrets and set this GitHub Actions repository variable:
+
+```text
+ENABLE_PRODUCTION_DEPLOY=true
+```
+
+Required secrets:
+
+```text
+DOCKERHUB_USERNAME
+DOCKERHUB_TOKEN
+DEPLOY_SSH_KEY
+DEPLOY_KNOWN_HOSTS
+DEPLOY_HOST
+DEPLOY_PORT
+DEPLOY_USER
+```
+
+## Backup and restore
+
+Create a backup of PostgreSQL data and uploaded files:
+
+```bash
+./deploy/backup.sh
+```
+
+Restore both parts from matching backup files:
+
+```bash
+./deploy/restore.sh \
+  data/backups/database-TIMESTAMP.dump \
+  data/backups/uploads-TIMESTAMP.tar.gz
+```
 
 ---
 
-<div align="center">
+<div dir="rtl">
 
-Built and maintained by [Reza Barzakhi](https://github.com/rezabarzakhi)
+## معرفی فارسی
+
+این مخزن نسخه اختصاصی Portfolio من است که با Next.js و TypeScript توسعه داده شده است. هدفم ساخت یک وب‌سایت دوزبانه بود که Project، Article، Resume و Contact Message را بدون وابستگی به CMS جداگانه مدیریت کند.
+
+نسخه فارسی به‌صورت کامل RTL و نسخه انگلیسی LTR است. برای مدیریت محتوای روزمره نیز Admin Panel اختصاصی در نظر گرفته شده و اطلاعات در PostgreSQL و از طریق Prisma نگهداری می‌شوند.
+
+این پروژه فقط یک قالب Front-End نیست. Authentication، Content Management، Validation، File Upload، Email، Docker Deployment و Backup بخشی از ساختار آن هستند. جزئیات راه‌اندازی و محدوده ملاحظات امنیتی در بخش‌های انگلیسی همین README توضیح داده شده‌اند.
 
 </div>
+
+## License
+
+Released under the [MIT License](LICENSE).
