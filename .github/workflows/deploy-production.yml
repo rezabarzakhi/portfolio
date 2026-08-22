@@ -1,4 +1,4 @@
-name: Validate and deploy
+name: Validate and publish
 
 on:
   push:
@@ -64,37 +64,8 @@ jobs:
           tags: |
             docker.io/${{ secrets.DOCKERHUB_USERNAME }}/portfolio:${{ github.sha }}
             docker.io/${{ secrets.DOCKERHUB_USERNAME }}/portfolio:latest
+          labels: |
+            org.opencontainers.image.revision=${{ github.sha }}
+            org.opencontainers.image.source=https://github.com/${{ github.repository }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Configure SSH
-        shell: bash
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
-          SSH_KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
-        run: |
-          install -d -m 700 ~/.ssh
-          printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/portfolio_ci
-          chmod 600 ~/.ssh/portfolio_ci
-          printf '%s\n' "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
-          chmod 600 ~/.ssh/known_hosts
-
-      - name: Deploy immutable image
-        shell: bash
-        env:
-          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
-          DEPLOY_PORT: ${{ secrets.DEPLOY_PORT }}
-          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
-          IMAGE: docker.io/${{ secrets.DOCKERHUB_USERNAME }}/portfolio:${{ github.sha }}
-        run: |
-          ssh \
-            -i ~/.ssh/portfolio_ci \
-            -p "$DEPLOY_PORT" \
-            -o BatchMode=yes \
-            -o ConnectTimeout=20 \
-            "$DEPLOY_USER@$DEPLOY_HOST" \
-            "deploy $IMAGE"

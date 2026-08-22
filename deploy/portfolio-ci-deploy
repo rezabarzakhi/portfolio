@@ -6,7 +6,7 @@ project_dir=/opt/stacks/portfolio
 compose_file="$project_dir/docker-compose.production.yml"
 env_file="$project_dir/.env"
 
-if ! printf '%s\n' "$image" | grep -Eq '^docker\.io/[a-z0-9][a-z0-9_.-]*/portfolio:[0-9a-f]{40}$'; then
+if ! printf '%s\n' "$image" | grep -Eq '^docker\.io/[a-z0-9][a-z0-9_.-]*/portfolio(:[0-9a-f]{40}|@sha256:[0-9a-f]{64})$'; then
   echo "Invalid deployment image: $image"
   exit 1
 fi

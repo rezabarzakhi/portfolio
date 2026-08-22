@@ -1,0 +1,12 @@
+[Unit]
+Description=Check for a new portfolio image
+
+[Timer]
+OnBootSec=2m
+OnUnitActiveSec=2m
+RandomizedDelaySec=30s
+Persistent=true
+Unit=portfolio-update.service
+
+[Install]
+WantedBy=timers.target

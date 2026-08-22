@@ -1,0 +1,56 @@
+#!/usr/bin/env sh
+set -eu
+
+repository="${PORTFOLIO_IMAGE_REPOSITORY:-docker.io/rezabarzakhi/portfolio}"
+latest="$repository:latest"
+env_file=/opt/stacks/portfolio/.env
+failed_digest_file=/var/lib/portfolio-update/failed-digest
+
+if ! printf '%s\n' "$repository" | grep -Eq '^docker\.io/[a-z0-9][a-z0-9_.-]*/portfolio$'; then
+  echo "Invalid portfolio image repository: $repository"
+  exit 1
+fi
+
+echo "Checking $latest..."
+docker pull "$latest"
+
+digest="$(
+  docker image inspect --format '{{range .RepoDigests}}{{println .}}{{end}}' "$latest" |
+    sed -n 's/.*@\(sha256:[0-9a-f]\{64\}\)$/\1/p' |
+    head -n 1
+)"
+revision="$(docker image inspect --format '{{index .Config.Labels "org.opencontainers.image.revision"}}' "$latest")"
+
+if ! printf '%s\n' "$digest" | grep -Eq '^sha256:[0-9a-f]{64}$'; then
+  echo "The published image has no valid repository digest."
+  exit 1
+fi
+
+if ! printf '%s\n' "$revision" | grep -Eq '^[0-9a-f]{40}$'; then
+  echo "The published image has no valid source revision label."
+  exit 1
+fi
+
+image="$repository@$digest"
+current="$(sed -n 's/^APP_IMAGE=//p' "$env_file" | tail -n 1)"
+
+if [ "$current" = "$image" ]; then
+  echo "Portfolio is already current at revision $revision."
+  rm -f "$failed_digest_file"
+  exit 0
+fi
+
+if [ -f "$failed_digest_file" ] && [ "$(cat "$failed_digest_file")" = "$digest" ]; then
+  echo "Skipping revision $revision because its previous deployment failed."
+  exit 0
+fi
+
+if /usr/local/sbin/portfolio-ci-deploy "$image"; then
+  rm -f "$failed_digest_file"
+  echo "Portfolio updated to revision $revision."
+  exit 0
+fi
+
+printf '%s\n' "$digest" > "$failed_digest_file"
+echo "Recorded failed portfolio revision $revision."
+exit 1
