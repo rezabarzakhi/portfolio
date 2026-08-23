@@ -61,6 +61,7 @@ jobs:
           context: .
           platforms: linux/amd64
           push: true
+          provenance: false
           tags: |
             docker.io/${{ secrets.DOCKERHUB_USERNAME }}/portfolio:${{ github.sha }}
             docker.io/${{ secrets.DOCKERHUB_USERNAME }}/portfolio:release-${{ github.run_number }}

@@ -17,30 +17,37 @@ if ! printf '%s\n' "$registry_mirror" | grep -Eq '^https://[a-z0-9][a-z0-9.-]+$'
   exit 1
 fi
 
-for command in curl jq; do
-  if ! command -v "$command" >/dev/null 2>&1; then
-    echo "Required command is missing: $command"
-    exit 1
-  fi
-done
-
-repository_path="${repository#docker.io/}"
-tags="$(curl --fail --silent --show-error --connect-timeout 20 --max-time 60 \
-  "$registry_mirror/v2/$repository_path/tags/list")"
-release="$(printf '%s\n' "$tags" | jq -r \
-  '[.tags[]? | select(test("^release-[0-9]+$")) | ltrimstr("release-") | tonumber] | max // empty')"
-
-if ! printf '%s\n' "$release" | grep -Eq '^[0-9]+$'; then
-  echo "No numbered portfolio release is available."
-  exit 0
+if ! command -v curl >/dev/null 2>&1; then
+  echo "Required command is missing: curl"
+  exit 1
 fi
 
+repository_path="${repository#docker.io/}"
+deployed_release=0
 if [ -f "$deployed_release_file" ]; then
-  deployed_release="$(cat "$deployed_release_file")"
-  if printf '%s\n' "$deployed_release" | grep -Eq '^[0-9]+$' && [ "$release" -le "$deployed_release" ]; then
-    echo "Portfolio release $deployed_release is already current."
-    exit 0
+  saved_release="$(cat "$deployed_release_file")"
+  if printf '%s\n' "$saved_release" | grep -Eq '^[0-9]+$'; then
+    deployed_release="$saved_release"
   fi
+fi
+
+release=""
+candidate_release=$((deployed_release + 1))
+scan_end=$((candidate_release + 24))
+while [ "$candidate_release" -le "$scan_end" ]; do
+  status="$(curl --head --silent --output /dev/null --write-out '%{http_code}' \
+    --connect-timeout 10 --max-time 20 \
+    --header 'Accept: application/vnd.docker.distribution.manifest.v2+json' \
+    "$registry_mirror/v2/$repository_path/manifests/release-$candidate_release" || true)"
+  if [ "$status" = "200" ]; then
+    release="$candidate_release"
+  fi
+  candidate_release=$((candidate_release + 1))
+done
+
+if ! printf '%s\n' "$release" | grep -Eq '^[0-9]+$'; then
+  echo "No newer numbered portfolio release is available."
+  exit 0
 fi
 
 if [ -f "$failed_release_file" ] && [ "$(cat "$failed_release_file")" = "$release" ]; then
