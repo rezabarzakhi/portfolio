@@ -50,6 +50,8 @@ export async function saveSettings(formData: FormData) {
   const values = Object.fromEntries(formData);
   values.heroImage = await saveUpload(formData.get("heroFile"), String(values.heroImage ?? ""), ["image/jpeg", "image/png", "image/webp"]);
   values.aboutImage = await saveUpload(formData.get("aboutFile"), String(values.aboutImage ?? ""), ["image/jpeg", "image/png", "image/webp"]);
+  values.logoUrl = await saveUpload(formData.get("logoFile"), String(values.logoUrl ?? ""), ["image/jpeg", "image/png", "image/webp"]);
+  values.faviconUrl = await saveUpload(formData.get("faviconFile"), String(values.faviconUrl ?? ""), ["image/jpeg", "image/png", "image/webp"]);
   values.resumeUrl = await saveUpload(formData.get("resumeFile"), String(values.resumeUrl ?? ""), ["application/pdf"]);
   const data = settingSchema.parse(values);
   await prisma.siteSetting.upsert({
@@ -62,7 +64,9 @@ export async function saveSettings(formData: FormData) {
 
 export async function saveSkill(formData: FormData) {
   await requireAdmin();
-  const data = skillSchema.parse(Object.fromEntries(formData));
+  const values = Object.fromEntries(formData);
+  values.iconUrl = await saveUpload(formData.get("iconFile"), String(values.iconUrl ?? ""), ["image/jpeg", "image/png", "image/webp"]);
+  const data = skillSchema.parse(values);
   if (data.id) await prisma.skill.update({ where: { id: data.id }, data });
   else await prisma.skill.create({ data });
   revalidatePath("/admin");

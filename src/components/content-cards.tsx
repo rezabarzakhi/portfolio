@@ -22,7 +22,7 @@ export function ProjectCard({ project, locale }: { project: Project; locale: Loc
       <div className="flex flex-col justify-center p-6 sm:p-10">
         <div className="mb-4 flex flex-wrap gap-2">
           {project.technologies.split(",").map((technology) => (
-            <span key={technology} className="rounded-full bg-[#374151] px-3 py-1 text-xs text-gray-200">
+            <span key={technology} className="technology-tag rounded-full px-3 py-1 text-xs">
               {technology.trim()}
             </span>
           ))}

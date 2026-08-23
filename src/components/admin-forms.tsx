@@ -6,6 +6,15 @@ const submitClass = "button-primary mt-5";
 
 export function SettingsForm({ setting }: { setting: SiteSetting }) {
   return <form action={saveSettings} className="grid gap-5">
+    <div className="rounded-xl border border-white/10 p-5">
+      <h3 className="mb-5 text-lg font-black">هویت بصری سایت</h3>
+      <div className="grid gap-5 md:grid-cols-2">
+        <input type="hidden" name="logoUrl" value={setting.logoUrl} />
+        <AdminInput label="لوگوی سایت" name="logoFile" type="file" accept="image/jpeg,image/png,image/webp" />
+        <input type="hidden" name="faviconUrl" value={setting.faviconUrl} />
+        <AdminInput label="نماد مرورگر" name="faviconFile" type="file" accept="image/jpeg,image/png,image/webp" />
+      </div>
+    </div>
     <div className="grid gap-5 md:grid-cols-2"><AdminInput label="نام فارسی" name="nameFa" defaultValue={setting.nameFa} required /><AdminInput label="نام انگلیسی" name="nameEn" defaultValue={setting.nameEn} required /></div>
     <div className="grid gap-5 md:grid-cols-2"><AdminInput label="عنوان حرفه‌ای فارسی" name="roleFa" defaultValue={setting.roleFa} required /><AdminInput label="عنوان حرفه‌ای انگلیسی" name="roleEn" defaultValue={setting.roleEn} required /></div>
     <div className="grid gap-5 md:grid-cols-2"><AdminTextarea label="معرفی کوتاه فارسی" name="introFa" defaultValue={setting.introFa} required /><AdminTextarea label="معرفی کوتاه انگلیسی" name="introEn" defaultValue={setting.introEn} required /></div>
@@ -23,7 +32,7 @@ export function SettingsForm({ setting }: { setting: SiteSetting }) {
 }
 
 export function SkillForm({ skill }: { skill?: Skill }) {
-  return <form action={saveSkill} className="grid gap-4 sm:grid-cols-[1fr_8rem_8rem_auto] sm:items-end">{skill && <input type="hidden" name="id" value={skill.id} />}<AdminInput label="مهارت" name="name" defaultValue={skill?.name} required /><AdminInput label="درصد" name="level" type="number" min="1" max="100" defaultValue={skill?.level ?? 80} required /><AdminInput label="ترتیب" name="sortOrder" type="number" min="0" defaultValue={skill?.sortOrder ?? 0} required /><button className="button-primary">{skill ? "ویرایش" : "افزودن"}</button></form>;
+  return <form action={saveSkill} className="grid gap-4 sm:grid-cols-[1fr_1fr_8rem_auto] sm:items-end">{skill && <input type="hidden" name="id" value={skill.id} />}<input type="hidden" name="iconUrl" value={skill?.iconUrl ?? ""} /><AdminInput label="مهارت" name="name" defaultValue={skill?.name} required /><AdminInput label="لوگوی فناوری" name="iconFile" type="file" accept="image/jpeg,image/png,image/webp" /><AdminInput label="ترتیب" name="sortOrder" type="number" min="0" defaultValue={skill?.sortOrder ?? 0} required /><button className="button-primary">{skill ? "ویرایش" : "افزودن"}</button></form>;
 }
 
 export function ProjectForm({ project }: { project?: Project }) {

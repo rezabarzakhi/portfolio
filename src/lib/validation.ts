@@ -37,6 +37,8 @@ export const settingSchema = z.object({
   availabilityEn: requiredText,
   heroImage: z.string().min(1),
   aboutImage: z.string().min(1),
+  logoUrl: z.string().max(500).default(""),
+  faviconUrl: z.string().max(500).default(""),
   resumeUrl: optionalUrl,
   githubUrl: optionalUrl,
   instagramUrl: optionalUrl,
@@ -49,7 +51,7 @@ export const settingSchema = z.object({
 export const skillSchema = z.object({
   id: z.string().optional(),
   name: z.string().trim().min(1).max(80),
-  level: z.coerce.number().int().min(1).max(100),
+  iconUrl: z.string().max(500).default(""),
   sortOrder: z.coerce.number().int().min(0).max(1000),
 });
 

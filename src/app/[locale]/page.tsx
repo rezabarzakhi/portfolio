@@ -68,10 +68,12 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
         <div className="container-shell">
           <SectionHeading eyebrow={t.skillsLabel} title={t.skillsTitle} />
           <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {skills.map((skill, index) => (
-              <div key={skill.id} className="surface rounded-xl p-5">
-                <div className="mb-4 flex items-center justify-between"><span className="font-bold">{skill.name}</span><span className="text-xs text-gray-600">0{index + 1}</span></div>
-                <div className="h-1 overflow-hidden rounded-full bg-gray-800"><div className="h-full rounded-full bg-gray-500" style={{ width: `${skill.level}%` }} /></div>
+            {skills.map((skill) => (
+              <div key={skill.id} className="surface flex items-center gap-4 rounded-xl p-5">
+                <div className="grid size-12 shrink-0 place-items-center overflow-hidden rounded-xl bg-gray-800">
+                  {skill.iconUrl ? <Image src={skill.iconUrl} alt="" width={48} height={48} className="size-9 object-contain" /> : <span className="text-sm font-black text-gray-400">{skill.name.slice(0, 2).toUpperCase()}</span>}
+                </div>
+                <span className="font-bold">{skill.name}</span>
               </div>
             ))}
           </div>

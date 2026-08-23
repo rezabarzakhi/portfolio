@@ -115,6 +115,15 @@ html[data-theme="light"] .theme-dark-icon {
   letter-spacing: 0.03em;
 }
 
+.technology-tag {
+  background: #374151;
+  color: #f3f4f6;
+}
+
+.article-meta .eyebrow {
+  margin-bottom: 0;
+}
+
 .display-title {
   max-width: 17ch;
   font-size: clamp(2.35rem, 6vw, 3.75rem);
@@ -191,7 +200,7 @@ html[data-theme="light"] .theme-dark-icon {
 }
 
 .prose-content {
-  color: #d1d5db;
+  color: var(--muted);
   font-size: 1.05rem;
   line-height: 2;
 }

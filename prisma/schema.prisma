@@ -35,6 +35,8 @@ model SiteSetting {
   availabilityEn  String
   heroImage       String
   aboutImage      String
+  logoUrl         String   @default("")
+  faviconUrl      String   @default("")
   resumeUrl       String?
   githubUrl       String?
   instagramUrl    String?
@@ -48,7 +50,7 @@ model SiteSetting {
 model Skill {
   id        String   @id @default(cuid())
   name      String
-  level     Int      @default(80)
+  iconUrl   String   @default("")
   sortOrder Int      @default(0)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

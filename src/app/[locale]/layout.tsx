@@ -26,6 +26,7 @@ export async function generateMetadata({ params }: LayoutProps): Promise<Metadat
     title: { default: title, template: `%s | ${locale === "fa" ? setting.nameFa : setting.nameEn}` },
     description,
     alternates: { languages: { fa: "/fa", en: "/en" } },
+    icons: { icon: setting.faviconUrl || "/default-mark.svg" },
     openGraph: { title, description, type: "website", locale: locale === "fa" ? "fa_IR" : "en_US", images: [setting.heroImage] },
   };
 }
@@ -41,7 +42,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
       </head>
       <body>
         <div className="site-shell" dir={locale === "fa" ? "rtl" : "ltr"}>
-          <SiteHeader locale={locale} />
+          <SiteHeader locale={locale} logoUrl={setting.logoUrl} />
           <main>{children}</main>
           <SiteFooter locale={locale} setting={setting} />
         </div>

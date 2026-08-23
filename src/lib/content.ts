@@ -28,6 +28,8 @@ export const defaultSetting: SiteSetting = {
   availabilityEn: "Available for new projects",
   heroImage: "https://www.rezabarzakhi.ir/wp-content/uploads/2025/12/me.jpg",
   aboutImage: "https://www.rezabarzakhi.ir/wp-content/uploads/2026/01/IMG_20210922_160307_463-1638x2048.jpg",
+  logoUrl: "",
+  faviconUrl: "",
   resumeUrl: null,
   githubUrl: "https://github.com/rezabarzakhi",
   instagramUrl: "https://www.instagram.com/rezabarzakhi/",
@@ -39,12 +41,12 @@ export const defaultSetting: SiteSetting = {
 };
 
 export const defaultSkills: Skill[] = [
-  { id: "fallback-1", name: "Next.js", level: 82, sortOrder: 1, ...timestamps },
-  { id: "fallback-2", name: "React", level: 88, sortOrder: 2, ...timestamps },
-  { id: "fallback-3", name: "TypeScript", level: 80, sortOrder: 3, ...timestamps },
-  { id: "fallback-4", name: "Tailwind CSS", level: 90, sortOrder: 4, ...timestamps },
-  { id: "fallback-5", name: "WordPress", level: 94, sortOrder: 5, ...timestamps },
-  { id: "fallback-6", name: "SEO", level: 78, sortOrder: 6, ...timestamps },
+  { id: "fallback-1", name: "Next.js", iconUrl: "", sortOrder: 1, ...timestamps },
+  { id: "fallback-2", name: "React", iconUrl: "", sortOrder: 2, ...timestamps },
+  { id: "fallback-3", name: "TypeScript", iconUrl: "", sortOrder: 3, ...timestamps },
+  { id: "fallback-4", name: "Tailwind CSS", iconUrl: "", sortOrder: 4, ...timestamps },
+  { id: "fallback-5", name: "WordPress", iconUrl: "", sortOrder: 5, ...timestamps },
+  { id: "fallback-6", name: "SEO", iconUrl: "", sortOrder: 6, ...timestamps },
 ];
 
 export const defaultProjects: Project[] = [

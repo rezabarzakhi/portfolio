@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
 import { useState } from "react";
@@ -8,7 +9,7 @@ import type { Locale } from "@/lib/content";
 import { dictionary } from "@/lib/content";
 import { ThemeToggle } from "@/components/theme-toggle";
 
-export function SiteHeader({ locale }: { locale: Locale }) {
+export function SiteHeader({ locale, logoUrl }: { locale: Locale; logoUrl: string }) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
   const t = dictionary[locale];
@@ -26,7 +27,7 @@ export function SiteHeader({ locale }: { locale: Locale }) {
     <header className="theme-header fixed inset-x-0 top-0 z-50 border-b border-white/5 backdrop-blur-md">
       <div className="container-shell flex h-20 items-center justify-between">
         <Link href={`/${locale}`} className="text-xl font-black tracking-tight" aria-label={t.nav.home}>
-          &lt;<span className="text-gray-300">RB</span>/&gt;
+          {logoUrl ? <Image src={logoUrl} alt="" width={160} height={48} className="h-10 w-auto object-contain" priority /> : <>&lt;<span className="text-gray-300">RB</span>/&gt;</>}
         </Link>
         <nav className="hidden items-center gap-7 text-sm text-gray-300 lg:flex" aria-label="Main navigation">
           {nav.map(([label, href]) => (
