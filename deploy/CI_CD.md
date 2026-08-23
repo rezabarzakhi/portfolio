@@ -1,14 +1,15 @@
 # Portfolio CI/CD
 
 Every push to `main` runs linting, type checking, and tests in GitHub Actions.
-After validation, GitHub builds an immutable Linux AMD64 image, publishes it to
-Docker Hub, and updates the `latest` tag.
+After validation, GitHub builds an immutable Linux AMD64 image and publishes it
+with commit-specific and monotonically numbered release tags.
 
-The production server checks Docker Hub through its registry mirror every two
-minutes. When the digest changes, it deploys that immutable digest, runs Prisma
-migrations, waits for the application health check, and restores the previous
-application image if the new container does not become healthy. A failed digest
-is not retried until a different image is published.
+The production server reads the tag list from its registry mirror every two
+minutes and pulls the highest numbered release tag. It deploys that immutable
+digest, runs Prisma migrations, waits for the application health check, and
+restores the previous application image if the new container does not become
+healthy. A failed release is not retried until a newer release is published.
+Numbered tags avoid stale `latest` responses and prevent automatic rollbacks.
 
 ## Required GitHub Actions secrets
 

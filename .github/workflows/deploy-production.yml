@@ -63,6 +63,7 @@ jobs:
           push: true
           tags: |
             docker.io/${{ secrets.DOCKERHUB_USERNAME }}/portfolio:${{ github.sha }}
+            docker.io/${{ secrets.DOCKERHUB_USERNAME }}/portfolio:release-${{ github.run_number }}
             docker.io/${{ secrets.DOCKERHUB_USERNAME }}/portfolio:latest
           labels: |
             org.opencontainers.image.revision=${{ github.sha }}

@@ -2,24 +2,62 @@
 set -eu
 
 repository="${PORTFOLIO_IMAGE_REPOSITORY:-docker.io/rezabarzakhi/portfolio}"
-latest="$repository:latest"
+registry_mirror="${PORTFOLIO_REGISTRY_MIRROR:-https://docker.arvancloud.ir}"
 env_file=/opt/stacks/portfolio/.env
-failed_digest_file=/var/lib/portfolio-update/failed-digest
+deployed_release_file=/var/lib/portfolio-update/deployed-release
+failed_release_file=/var/lib/portfolio-update/failed-release
 
 if ! printf '%s\n' "$repository" | grep -Eq '^docker\.io/[a-z0-9][a-z0-9_.-]*/portfolio$'; then
   echo "Invalid portfolio image repository: $repository"
   exit 1
 fi
 
-echo "Checking $latest..."
-docker pull "$latest"
+if ! printf '%s\n' "$registry_mirror" | grep -Eq '^https://[a-z0-9][a-z0-9.-]+$'; then
+  echo "Invalid registry mirror: $registry_mirror"
+  exit 1
+fi
+
+for command in curl jq; do
+  if ! command -v "$command" >/dev/null 2>&1; then
+    echo "Required command is missing: $command"
+    exit 1
+  fi
+done
+
+repository_path="${repository#docker.io/}"
+tags="$(curl --fail --silent --show-error --connect-timeout 20 --max-time 60 \
+  "$registry_mirror/v2/$repository_path/tags/list")"
+release="$(printf '%s\n' "$tags" | jq -r \
+  '[.tags[]? | select(test("^release-[0-9]+$")) | ltrimstr("release-") | tonumber] | max // empty')"
+
+if ! printf '%s\n' "$release" | grep -Eq '^[0-9]+$'; then
+  echo "No numbered portfolio release is available."
+  exit 0
+fi
+
+if [ -f "$deployed_release_file" ]; then
+  deployed_release="$(cat "$deployed_release_file")"
+  if printf '%s\n' "$deployed_release" | grep -Eq '^[0-9]+$' && [ "$release" -le "$deployed_release" ]; then
+    echo "Portfolio release $deployed_release is already current."
+    exit 0
+  fi
+fi
+
+if [ -f "$failed_release_file" ] && [ "$(cat "$failed_release_file")" = "$release" ]; then
+  echo "Skipping release $release because its previous deployment failed."
+  exit 0
+fi
+
+candidate="$repository:release-$release"
+echo "Pulling $candidate..."
+docker pull "$candidate"
 
 digest="$(
-  docker image inspect --format '{{range .RepoDigests}}{{println .}}{{end}}' "$latest" |
+  docker image inspect --format '{{range .RepoDigests}}{{println .}}{{end}}' "$candidate" |
     sed -n 's/.*@\(sha256:[0-9a-f]\{64\}\)$/\1/p' |
     head -n 1
 )"
-revision="$(docker image inspect --format '{{index .Config.Labels "org.opencontainers.image.revision"}}' "$latest")"
+revision="$(docker image inspect --format '{{index .Config.Labels "org.opencontainers.image.revision"}}' "$candidate")"
 
 if ! printf '%s\n' "$digest" | grep -Eq '^sha256:[0-9a-f]{64}$'; then
   echo "The published image has no valid repository digest."
@@ -36,21 +74,18 @@ current="$(sed -n 's/^APP_IMAGE=//p' "$env_file" | tail -n 1)"
 
 if [ "$current" = "$image" ]; then
   echo "Portfolio is already current at revision $revision."
-  rm -f "$failed_digest_file"
-  exit 0
-fi
-
-if [ -f "$failed_digest_file" ] && [ "$(cat "$failed_digest_file")" = "$digest" ]; then
-  echo "Skipping revision $revision because its previous deployment failed."
+  printf '%s\n' "$release" > "$deployed_release_file"
+  rm -f "$failed_release_file"
   exit 0
 fi
 
 if /usr/local/sbin/portfolio-ci-deploy "$image"; then
-  rm -f "$failed_digest_file"
-  echo "Portfolio updated to revision $revision."
+  printf '%s\n' "$release" > "$deployed_release_file"
+  rm -f "$failed_release_file"
+  echo "Portfolio updated to release $release at revision $revision."
   exit 0
 fi
 
-printf '%s\n' "$digest" > "$failed_digest_file"
-echo "Recorded failed portfolio revision $revision."
+printf '%s\n' "$release" > "$failed_release_file"
+echo "Recorded failed portfolio release $release at revision $revision."
 exit 1
