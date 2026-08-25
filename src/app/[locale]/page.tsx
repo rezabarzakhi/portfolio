@@ -4,6 +4,7 @@ import { ArrowLeft, ArrowRight, Download, Mail, MapPin } from "lucide-react";
 import { notFound } from "next/navigation";
 import { ContactForm } from "@/components/contact-form";
 import { PostCard, ProjectCard } from "@/components/content-cards";
+import { PortraitFrame } from "@/components/portrait-frame";
 import { SectionHeading } from "@/components/section-heading";
 import { SocialLinks } from "@/components/site-footer";
 import { dictionary, getPublicContent, isLocale } from "@/lib/content";
@@ -25,7 +26,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
 
   return (
     <>
-      <section className="grid-lines pt-36 pb-20 sm:pt-44 sm:pb-24">
+      <section className="ambient-section grid-lines pt-36 pb-20 sm:pt-44 sm:pb-24">
         <div className="container-shell grid items-center gap-16 lg:grid-cols-[1fr_0.65fr]">
           <div>
             <h1 className="display-title">{t.heroEyebrow}</h1>
@@ -42,20 +43,13 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
             </div>
             <div className="mt-6"><SocialLinks setting={setting} /></div>
           </div>
-          <div className="relative mx-auto h-80 w-[16.25rem] max-w-full">
-            <div className="absolute inset-0 translate-x-[2.8rem] translate-y-[2.8rem] bg-[#27374d]" />
-            <div className="image-frame relative h-80 w-[16.25rem] max-w-full overflow-hidden border-8 bg-[#1a2332] shadow-2xl">
-              <Image src={setting.heroImage} alt={name} fill priority sizes="(max-width: 1024px) 80vw, 35vw" className="object-cover" />
-            </div>
-          </div>
+          <PortraitFrame src={setting.heroImage} alt={name} priority />
         </div>
       </section>
 
-      <section className="section-alt section-space border-y border-white/5">
+      <section className="ambient-section ambient-section-right section-alt section-space border-y border-white/5">
         <div className="container-shell grid items-center gap-14 lg:grid-cols-[0.72fr_1fr]">
-          <div className="relative mx-auto h-80 w-[16.25rem] max-w-full bg-[#27374d] before:absolute before:inset-0 before:translate-x-[2.8rem] before:translate-y-[2.8rem] before:bg-[#27374d]">
-            <Image src={setting.aboutImage} alt={t.aboutLabel} fill sizes="(max-width: 1024px) 100vw, 40vw" className="image-frame relative z-10 border-8 object-cover" />
-          </div>
+          <PortraitFrame src={setting.aboutImage} alt={t.aboutLabel} />
           <div>
             <SectionHeading eyebrow={t.aboutLabel} title={t.aboutTitle} />
             <p className="mt-7 max-w-2xl text-lg leading-9 text-gray-400">{about}</p>
@@ -64,12 +58,12 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
         </div>
       </section>
 
-      <section className="section-space">
+      <section className="ambient-section section-space">
         <div className="container-shell">
           <SectionHeading eyebrow={t.skillsLabel} title={t.skillsTitle} />
           <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {skills.map((skill) => (
-              <div key={skill.id} className="surface flex items-center gap-4 rounded-xl p-5">
+              <div key={skill.id} className="surface glass-card flex items-center gap-4 rounded-xl p-5">
                 <div className="grid size-12 shrink-0 place-items-center overflow-hidden rounded-xl bg-gray-800">
                   {skill.iconUrl ? <Image src={skill.iconUrl} alt="" width={48} height={48} className="size-9 object-contain" /> : <span className="text-sm font-black text-gray-400">{skill.name.slice(0, 2).toUpperCase()}</span>}
                 </div>
@@ -80,21 +74,21 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
         </div>
       </section>
 
-      <section className="section-alt section-space border-y border-white/5">
+      <section className="ambient-section ambient-section-right section-alt section-space border-y border-white/5">
         <div className="container-shell">
           <div className="flex flex-wrap items-end justify-between gap-6"><SectionHeading eyebrow={t.projectsLabel} title={t.projectsTitle} /><Link href={`/${locale}/projects`} className="button-secondary">{t.allProjects}<Arrow size={17} /></Link></div>
           <div className="mt-12 grid gap-7">{projects.slice(0, 4).map((project) => <ProjectCard key={project.id} project={project} locale={locale} />)}</div>
         </div>
       </section>
 
-      <section className="section-space">
+      <section className="ambient-section section-space">
         <div className="container-shell">
           <div className="flex flex-wrap items-end justify-between gap-6"><SectionHeading eyebrow={t.blogLabel} title={t.blogTitle} /><Link href={`/${locale}/blog`} className="button-secondary">{t.allPosts}<Arrow size={17} /></Link></div>
           <div className="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-3">{posts.slice(0, 3).map((post) => <PostCard key={post.id} post={post} locale={locale} />)}</div>
         </div>
       </section>
 
-      <section className="section-alt section-space border-t border-white/5">
+      <section className="ambient-section ambient-section-right section-alt section-space border-t border-white/5">
         <div className="container-shell grid gap-12 lg:grid-cols-[0.7fr_1fr]">
           <div><SectionHeading eyebrow={t.contactLabel} title={t.contactTitle} /><p className="mt-5 leading-8 text-gray-400">{t.contactDescription}</p><a href={`mailto:${setting.email}`} className="mt-7 inline-flex items-center gap-2 text-gray-200 hover:text-white"><Mail size={18} />{setting.email}</a></div>
           <ContactForm locale={locale} />

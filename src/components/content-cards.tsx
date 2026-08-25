@@ -9,7 +9,7 @@ export function ProjectCard({ project, locale }: { project: Project; locale: Loc
   const t = dictionary[locale];
   const Arrow = locale === "fa" ? ArrowUpLeft : ArrowUpRight;
   return (
-    <article className="surface group overflow-hidden rounded-xl md:grid md:grid-cols-2">
+    <article className="surface glass-card group overflow-hidden rounded-2xl md:grid md:grid-cols-2">
       <div className="relative min-h-64 overflow-hidden bg-[#27374d] md:min-h-96">
         <Image
           src={project.imageUrl}
@@ -40,7 +40,7 @@ export function ProjectCard({ project, locale }: { project: Project; locale: Loc
 export function PostCard({ post, locale }: { post: Post; locale: Locale }) {
   const t = dictionary[locale];
   return (
-    <article className="surface overflow-hidden rounded-2xl p-6 sm:p-7">
+    <article className="surface glass-card overflow-hidden rounded-2xl p-6 sm:p-7">
       <div className="mb-8 flex items-center justify-between gap-4 text-xs text-gray-500">
         <span className="text-gray-300">{locale === "fa" ? post.categoryFa : post.categoryEn}</span>
         {post.publishedAt && (
