@@ -10,7 +10,7 @@ export function ProjectCard({ project, locale }: { project: Project; locale: Loc
   const Arrow = locale === "fa" ? ArrowUpLeft : ArrowUpRight;
   return (
     <article className="surface group overflow-hidden rounded-xl md:grid md:grid-cols-2">
-      <div className="relative min-h-64 overflow-hidden bg-[#374151] md:min-h-96">
+      <div className="relative min-h-64 overflow-hidden bg-[#27374d] md:min-h-96">
         <Image
           src={project.imageUrl}
           alt={locale === "fa" ? project.titleFa : project.titleEn}

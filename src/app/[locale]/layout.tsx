@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import "../globals.css";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
+import { ToastContainer } from "@/components/toast";
 import { getPublicContent, isLocale } from "@/lib/content";
 
 const vazirmatn = Vazirmatn({
@@ -46,6 +47,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
           <main>{children}</main>
           <SiteFooter locale={locale} setting={setting} />
         </div>
+        <ToastContainer />
       </body>
     </html>
   );

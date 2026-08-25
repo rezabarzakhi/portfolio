@@ -41,9 +41,9 @@ export function RichTextEditor({ name, label, initialValue = "", direction }: { 
   return (
     <div>
       <span className="form-label">{label}</span>
-      <div className="overflow-hidden rounded-xl border border-white/10 bg-[#0b1220]">
+      <div className="overflow-hidden rounded-xl border border-white/10 bg-[#1a2332]/80 backdrop-blur-sm">
         <div className="flex flex-wrap gap-1 border-b border-white/10 p-2">
-          <select className="rounded-lg bg-[#1f2937] px-2 text-xs" defaultValue="p" onChange={(event) => command("formatBlock", event.target.value)} aria-label="نوع متن">
+          <select className="rounded-lg bg-[#27374d] px-2 text-xs" defaultValue="p" onChange={(event) => command("formatBlock", event.target.value)} aria-label="نوع متن">
             <option value="p">متن</option><option value="h2">تیتر اصلی</option><option value="h3">زیرتیتر</option>
           </select>
           {tools.map(([title, Icon, toolCommand, value]) => <button key={title} type="button" title={title} aria-label={title} onMouseDown={(event) => { event.preventDefault(); if (toolCommand === "link") addLink(); else if (toolCommand === "image") addImage(); else command(toolCommand, value); }} className="grid size-9 place-items-center rounded-lg text-gray-300 hover:bg-white/10 hover:text-white"><Icon size={16} /></button>)}

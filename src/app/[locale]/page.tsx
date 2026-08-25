@@ -43,8 +43,8 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
             <div className="mt-6"><SocialLinks setting={setting} /></div>
           </div>
           <div className="relative mx-auto h-80 w-[16.25rem] max-w-full">
-            <div className="absolute inset-0 translate-x-[2.8rem] translate-y-[2.8rem] bg-[#374151]" />
-            <div className="image-frame relative h-80 w-[16.25rem] max-w-full overflow-hidden border-8 bg-gray-900 shadow-2xl">
+            <div className="absolute inset-0 translate-x-[2.8rem] translate-y-[2.8rem] bg-[#27374d]" />
+            <div className="image-frame relative h-80 w-[16.25rem] max-w-full overflow-hidden border-8 bg-[#1a2332] shadow-2xl">
               <Image src={setting.heroImage} alt={name} fill priority sizes="(max-width: 1024px) 80vw, 35vw" className="object-cover" />
             </div>
           </div>
@@ -53,7 +53,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
 
       <section className="section-alt section-space border-y border-white/5">
         <div className="container-shell grid items-center gap-14 lg:grid-cols-[0.72fr_1fr]">
-          <div className="relative mx-auto h-80 w-[16.25rem] max-w-full bg-[#374151] before:absolute before:inset-0 before:translate-x-[2.8rem] before:translate-y-[2.8rem] before:bg-[#374151]">
+          <div className="relative mx-auto h-80 w-[16.25rem] max-w-full bg-[#27374d] before:absolute before:inset-0 before:translate-x-[2.8rem] before:translate-y-[2.8rem] before:bg-[#27374d]">
             <Image src={setting.aboutImage} alt={t.aboutLabel} fill sizes="(max-width: 1024px) 100vw, 40vw" className="image-frame relative z-10 border-8 object-cover" />
           </div>
           <div>

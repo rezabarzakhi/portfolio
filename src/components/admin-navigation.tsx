@@ -24,7 +24,7 @@ export function AdminNavigation() {
           <Link
             key={href}
             href={href}
-            className={`flex shrink-0 items-center gap-3 rounded-xl px-4 py-3 text-sm transition ${active ? "bg-[#374151] text-white" : "text-gray-400 hover:bg-white/5 hover:text-white"}`}
+            className={`flex shrink-0 items-center gap-3 rounded-xl px-4 py-3 text-sm transition ${active ? "bg-[#526d82]/40 text-[#dde6ed]" : "text-gray-400 hover:bg-white/5 hover:text-white"}`}
           >
             <Icon size={18} />{label}
           </Link>

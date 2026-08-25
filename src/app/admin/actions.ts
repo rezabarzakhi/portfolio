@@ -10,6 +10,8 @@ import { auth, signIn, signOut } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { experienceSchema, postSchema, projectSchema, settingSchema, skillSchema } from "@/lib/validation";
 
+export type FormState = { status: "success" | "error"; message: string } | null;
+
 async function requireAdmin() {
   const session = await auth();
   if (!session?.user) redirect("/admin/login");
@@ -45,119 +47,174 @@ export async function logoutAction() {
   await signOut({ redirectTo: "/admin/login" });
 }
 
-export async function saveSettings(formData: FormData) {
-  await requireAdmin();
-  const values = Object.fromEntries(formData);
-  values.heroImage = await saveUpload(formData.get("heroFile"), String(values.heroImage ?? ""), ["image/jpeg", "image/png", "image/webp"]);
-  values.aboutImage = await saveUpload(formData.get("aboutFile"), String(values.aboutImage ?? ""), ["image/jpeg", "image/png", "image/webp"]);
-  values.logoUrl = await saveUpload(formData.get("logoFile"), String(values.logoUrl ?? ""), ["image/jpeg", "image/png", "image/webp"]);
-  values.faviconUrl = await saveUpload(formData.get("faviconFile"), String(values.faviconUrl ?? ""), ["image/jpeg", "image/png", "image/webp"]);
-  values.resumeUrl = await saveUpload(formData.get("resumeFile"), String(values.resumeUrl ?? ""), ["application/pdf"]);
-  const data = settingSchema.parse(values);
-  await prisma.siteSetting.upsert({
-    where: { id: "main" },
-    update: { ...data, resumeUrl: data.resumeUrl || null },
-    create: { id: "main", ...data, resumeUrl: data.resumeUrl || null },
-  });
-  revalidatePath("/", "layout");
+export async function saveSettings(_prev: FormState, formData: FormData): Promise<FormState> {
+  try {
+    await requireAdmin();
+    const values = Object.fromEntries(formData);
+    values.heroImage = await saveUpload(formData.get("heroFile"), String(values.heroImage ?? ""), ["image/jpeg", "image/png", "image/webp"]);
+    values.aboutImage = await saveUpload(formData.get("aboutFile"), String(values.aboutImage ?? ""), ["image/jpeg", "image/png", "image/webp"]);
+    values.logoUrl = await saveUpload(formData.get("logoFile"), String(values.logoUrl ?? ""), ["image/jpeg", "image/png", "image/webp"]);
+    values.faviconUrl = await saveUpload(formData.get("faviconFile"), String(values.faviconUrl ?? ""), ["image/jpeg", "image/png", "image/webp"]);
+    values.resumeUrl = await saveUpload(formData.get("resumeFile"), String(values.resumeUrl ?? ""), ["application/pdf"]);
+    const data = settingSchema.parse(values);
+    await prisma.siteSetting.upsert({
+      where: { id: "main" },
+      update: { ...data, resumeUrl: data.resumeUrl || null },
+      create: { id: "main", ...data, resumeUrl: data.resumeUrl || null },
+    });
+    revalidatePath("/", "layout");
+    revalidatePath("/admin");
+    return { status: "success", message: "اطلاعات اصلی با موفقیت ذخیره شد." };
+  } catch {
+    return { status: "error", message: "خطا در ذخیره اطلاعات اصلی." };
+  }
 }
 
-export async function saveSkill(formData: FormData) {
-  await requireAdmin();
-  const values = Object.fromEntries(formData);
-  values.iconUrl = await saveUpload(formData.get("iconFile"), String(values.iconUrl ?? ""), ["image/jpeg", "image/png", "image/webp"]);
-  const data = skillSchema.parse(values);
-  if (data.id) await prisma.skill.update({ where: { id: data.id }, data });
-  else await prisma.skill.create({ data });
-  revalidatePath("/admin");
+export async function saveSkill(_prev: FormState, formData: FormData): Promise<FormState> {
+  try {
+    await requireAdmin();
+    const values = Object.fromEntries(formData);
+    values.iconUrl = await saveUpload(formData.get("iconFile"), String(values.iconUrl ?? ""), ["image/jpeg", "image/png", "image/webp"]);
+    const data = skillSchema.parse(values);
+    if (data.id) await prisma.skill.update({ where: { id: data.id }, data });
+    else await prisma.skill.create({ data });
+    revalidatePath("/admin");
+    return { status: "success", message: data.id ? "مهارت ویرایش شد." : "مهارت جدید اضافه شد." };
+  } catch {
+    return { status: "error", message: "خطا در ذخیره مهارت." };
+  }
 }
 
-export async function deleteSkill(formData: FormData) {
-  await requireAdmin();
-  await prisma.skill.delete({ where: { id: String(formData.get("id")) } });
-  revalidatePath("/admin");
+export async function deleteSkill(_prev: FormState, formData: FormData): Promise<FormState> {
+  try {
+    await requireAdmin();
+    await prisma.skill.delete({ where: { id: String(formData.get("id")) } });
+    revalidatePath("/admin");
+    return { status: "success", message: "مهارت حذف شد." };
+  } catch {
+    return { status: "error", message: "خطا در حذف مهارت." };
+  }
 }
 
-export async function saveProject(formData: FormData) {
-  await requireAdmin();
-  const values = Object.fromEntries(formData);
-  values.imageUrl = await saveUpload(formData.get("imageFile"), String(values.imageUrl ?? ""), ["image/jpeg", "image/png", "image/webp"]);
-  values.featured = formData.has("featured") ? "true" : "false";
-  values.published = formData.has("published") ? "true" : "false";
-  const data = projectSchema.parse(values);
-  const payload = {
-    ...data,
-    liveUrl: data.liveUrl || null,
-    repositoryUrl: data.repositoryUrl || null,
-    completedAt: data.completedAt ? new Date(data.completedAt) : null,
-  };
-  if (data.id) await prisma.project.update({ where: { id: data.id }, data: payload });
-  else await prisma.project.create({ data: payload });
-  revalidatePath("/", "layout");
-  revalidatePath("/admin");
+export async function saveProject(_prev: FormState, formData: FormData): Promise<FormState> {
+  try {
+    await requireAdmin();
+    const values = Object.fromEntries(formData);
+    values.imageUrl = await saveUpload(formData.get("imageFile"), String(values.imageUrl ?? ""), ["image/jpeg", "image/png", "image/webp"]);
+    values.featured = formData.has("featured") ? "true" : "false";
+    values.published = formData.has("published") ? "true" : "false";
+    const data = projectSchema.parse(values);
+    const payload = {
+      ...data,
+      liveUrl: data.liveUrl || null,
+      repositoryUrl: data.repositoryUrl || null,
+      completedAt: data.completedAt ? new Date(data.completedAt) : null,
+    };
+    if (data.id) await prisma.project.update({ where: { id: data.id }, data: payload });
+    else await prisma.project.create({ data: payload });
+    revalidatePath("/", "layout");
+    revalidatePath("/admin");
+    return { status: "success", message: data.id ? "پروژه ویرایش شد." : "پروژه جدید اضافه شد." };
+  } catch {
+    return { status: "error", message: "خطا در ذخیره پروژه." };
+  }
 }
 
-export async function deleteProject(formData: FormData) {
-  await requireAdmin();
-  await prisma.project.delete({ where: { id: String(formData.get("id")) } });
-  revalidatePath("/", "layout");
-  revalidatePath("/admin");
+export async function deleteProject(_prev: FormState, formData: FormData): Promise<FormState> {
+  try {
+    await requireAdmin();
+    await prisma.project.delete({ where: { id: String(formData.get("id")) } });
+    revalidatePath("/", "layout");
+    revalidatePath("/admin");
+    return { status: "success", message: "پروژه حذف شد." };
+  } catch {
+    return { status: "error", message: "خطا در حذف پروژه." };
+  }
 }
 
-export async function savePost(formData: FormData) {
-  await requireAdmin();
-  const values = Object.fromEntries(formData);
-  values.imageUrl = await saveUpload(formData.get("imageFile"), String(values.imageUrl ?? ""), ["image/jpeg", "image/png", "image/webp"]);
-  values.published = formData.has("published") ? "true" : "false";
-  values.featured = formData.has("featured") ? "true" : "false";
-  values.allowIndex = formData.has("allowIndex") ? "true" : "false";
-  const data = postSchema.parse(values);
-  const existing = data.id ? await prisma.post.findUnique({ where: { id: data.id } }) : null;
-  const payload = {
-    ...data,
-    canonicalUrl: data.canonicalUrl || null,
-    publishedAt: data.published
-      ? data.publishedAt ? new Date(data.publishedAt) : existing?.publishedAt ?? new Date()
-      : null,
-  };
-  if (data.id) await prisma.post.update({ where: { id: data.id }, data: payload });
-  else await prisma.post.create({ data: payload });
-  revalidatePath("/", "layout");
-  revalidatePath("/admin");
-  redirect("/admin/posts");
+export async function savePost(_prev: FormState, formData: FormData): Promise<FormState> {
+  try {
+    await requireAdmin();
+    const values = Object.fromEntries(formData);
+    values.imageUrl = await saveUpload(formData.get("imageFile"), String(values.imageUrl ?? ""), ["image/jpeg", "image/png", "image/webp"]);
+    values.published = formData.has("published") ? "true" : "false";
+    values.featured = formData.has("featured") ? "true" : "false";
+    values.allowIndex = formData.has("allowIndex") ? "true" : "false";
+    const data = postSchema.parse(values);
+    const existing = data.id ? await prisma.post.findUnique({ where: { id: data.id } }) : null;
+    const payload = {
+      ...data,
+      canonicalUrl: data.canonicalUrl || null,
+      publishedAt: data.published
+        ? data.publishedAt ? new Date(data.publishedAt) : existing?.publishedAt ?? new Date()
+        : null,
+    };
+    if (data.id) await prisma.post.update({ where: { id: data.id }, data: payload });
+    else await prisma.post.create({ data: payload });
+    revalidatePath("/", "layout");
+    revalidatePath("/admin");
+    return { status: "success", message: data.id ? "مقاله ویرایش شد." : "مقاله جدید اضافه شد." };
+  } catch {
+    return { status: "error", message: "خطا در ذخیره مقاله." };
+  }
 }
 
-export async function deletePost(formData: FormData) {
-  await requireAdmin();
-  await prisma.post.delete({ where: { id: String(formData.get("id")) } });
-  revalidatePath("/", "layout");
-  revalidatePath("/admin");
+export async function deletePost(_prev: FormState, formData: FormData): Promise<FormState> {
+  try {
+    await requireAdmin();
+    await prisma.post.delete({ where: { id: String(formData.get("id")) } });
+    revalidatePath("/", "layout");
+    revalidatePath("/admin");
+    return { status: "success", message: "مقاله حذف شد." };
+  } catch {
+    return { status: "error", message: "خطا در حذف مقاله." };
+  }
 }
 
-export async function saveExperience(formData: FormData) {
-  await requireAdmin();
-  const data = experienceSchema.parse(Object.fromEntries(formData));
-  if (data.id) await prisma.experience.update({ where: { id: data.id }, data });
-  else await prisma.experience.create({ data });
-  revalidatePath("/", "layout");
-  revalidatePath("/admin");
+export async function saveExperience(_prev: FormState, formData: FormData): Promise<FormState> {
+  try {
+    await requireAdmin();
+    const data = experienceSchema.parse(Object.fromEntries(formData));
+    if (data.id) await prisma.experience.update({ where: { id: data.id }, data });
+    else await prisma.experience.create({ data });
+    revalidatePath("/", "layout");
+    revalidatePath("/admin");
+    return { status: "success", message: data.id ? "سابقه ویرایش شد." : "سابقه جدید اضافه شد." };
+  } catch {
+    return { status: "error", message: "خطا در ذخیره سابقه." };
+  }
 }
 
-export async function deleteExperience(formData: FormData) {
-  await requireAdmin();
-  await prisma.experience.delete({ where: { id: String(formData.get("id")) } });
-  revalidatePath("/", "layout");
-  revalidatePath("/admin");
+export async function deleteExperience(_prev: FormState, formData: FormData): Promise<FormState> {
+  try {
+    await requireAdmin();
+    await prisma.experience.delete({ where: { id: String(formData.get("id")) } });
+    revalidatePath("/", "layout");
+    revalidatePath("/admin");
+    return { status: "success", message: "سابقه حذف شد." };
+  } catch {
+    return { status: "error", message: "خطا در حذف سابقه." };
+  }
 }
 
-export async function markMessageRead(formData: FormData) {
-  await requireAdmin();
-  await prisma.contactMessage.update({ where: { id: String(formData.get("id")) }, data: { read: true } });
-  revalidatePath("/admin");
+export async function markMessageRead(_prev: FormState, formData: FormData): Promise<FormState> {
+  try {
+    await requireAdmin();
+    await prisma.contactMessage.update({ where: { id: String(formData.get("id")) }, data: { read: true } });
+    revalidatePath("/admin");
+    return { status: "success", message: "پیام خوانده شد." };
+  } catch {
+    return { status: "error", message: "خطا در به‌روزرسانی پیام." };
+  }
 }
 
-export async function deleteMessage(formData: FormData) {
-  await requireAdmin();
-  await prisma.contactMessage.delete({ where: { id: String(formData.get("id")) } });
-  revalidatePath("/admin");
+export async function deleteMessage(_prev: FormState, formData: FormData): Promise<FormState> {
+  try {
+    await requireAdmin();
+    await prisma.contactMessage.delete({ where: { id: String(formData.get("id")) } });
+    revalidatePath("/admin");
+    return { status: "success", message: "پیام حذف شد." };
+  } catch {
+    return { status: "error", message: "خطا در حذف پیام." };
+  }
 }
