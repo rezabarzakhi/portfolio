@@ -448,6 +448,7 @@ html[data-theme="light"] .hover\:text-white:hover { color: #27374d; }
 
 .toast {
   pointer-events: auto;
+  max-width: 28rem;
   border-radius: 0.75rem;
   padding: 0.75rem 1.25rem;
   font-size: 0.875rem;
@@ -456,6 +457,12 @@ html[data-theme="light"] .hover\:text-white:hover { color: #27374d; }
   -webkit-backdrop-filter: blur(12px);
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
   animation: toast-in 300ms ease, toast-out 300ms ease 2.7s forwards;
+}
+
+.toast-long {
+  max-width: 36rem;
+  line-height: 1.6;
+  animation: toast-in 300ms ease, toast-out 300ms ease 5.7s forwards;
 }
 
 .toast-success {
@@ -502,4 +509,99 @@ html[data-theme="light"] .toast-error {
     transition-duration: 0.01ms !important;
     animation-duration: 0.01ms !important;
   }
+}
+
+.form-field-invalid {
+  border-color: #f87171 !important;
+  box-shadow: 0 0 0 3px rgba(248, 113, 113, 0.2) !important;
+}
+
+html[data-theme="light"] .form-field-invalid {
+  border-color: #dc2626 !important;
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.15) !important;
+}
+
+.image-upload {
+  position: relative;
+  overflow: hidden;
+  border-radius: 0.75rem;
+  border: 2px dashed var(--border);
+  background: var(--field);
+  transition: border-color 180ms ease, background 180ms ease;
+  cursor: pointer;
+}
+
+.image-upload:hover {
+  border-color: var(--accent);
+  background: rgba(82, 109, 130, 0.1);
+}
+
+.image-upload-preview {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 8rem;
+  overflow: hidden;
+}
+
+.image-upload-preview img {
+  max-height: 12rem;
+  max-width: 100%;
+  object-fit: contain;
+  border-radius: 0.5rem;
+}
+
+.image-upload-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: rgba(26, 35, 50, 0.85);
+  backdrop-filter: blur(4px);
+  opacity: 0;
+  transition: opacity 180ms ease;
+  color: #dde6ed;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.image-upload:hover .image-upload-overlay {
+  opacity: 1;
+}
+
+.image-upload-has-image .image-upload-overlay {
+  opacity: 0;
+}
+
+.image-upload-has-image:hover .image-upload-overlay {
+  opacity: 1;
+}
+
+.upload-progress {
+  width: 100%;
+  height: 4px;
+  border-radius: 999px;
+  background: rgba(82, 109, 130, 0.3);
+  overflow: hidden;
+  margin-top: 0.5rem;
+}
+
+.upload-progress-bar {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #526d82, #9db2bf);
+  transition: width 200ms ease;
+}
+
+.upload-progress-bar.upload-progress-animate {
+  animation: progress-pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes progress-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
 }

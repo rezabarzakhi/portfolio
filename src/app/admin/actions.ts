@@ -9,17 +9,50 @@ import { redirect } from "next/navigation";
 import { auth, signIn, signOut } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { experienceSchema, postSchema, projectSchema, settingSchema, skillSchema } from "@/lib/validation";
+import { ZodError } from "zod";
 
-export type FormState = { status: "success" | "error"; message: string } | null;
+export type FormState = {
+  status: "success" | "error";
+  message: string;
+  errors?: Record<string, string>;
+} | null;
+
+function formatZodError(error: ZodError): { message: string; errors: Record<string, string> } {
+  const errors: Record<string, string> = {};
+  for (const issue of error.issues) {
+    const field = issue.path.join(".");
+    if (!errors[field]) {
+      errors[field] = issue.message;
+    }
+  }
+  const fieldCount = Object.keys(errors).length;
+  return {
+    message: fieldCount === 1
+      ? `یک فیلد اشتباه است: ${Object.values(errors)[0]}`
+      : `${fieldCount} فیلد اشتباه هستند. لطفاً فیلدها را بررسی کنید.`,
+    errors,
+  };
+}
+
+function formatUploadError(err: unknown): string {
+  if (err instanceof Error && err.message.startsWith("فایل")) return err.message;
+  if (err instanceof Error && err.message.startsWith("فرمت")) return err.message;
+  return "خطا در بارگذاری فایل. لطفاً دوباره تلاش کنید.";
+}
 
 async function requireAdmin() {
   const session = await auth();
   if (!session?.user) redirect("/admin/login");
 }
 
-async function saveUpload(file: FormDataEntryValue | null, current: string, allowed: string[]) {
+async function saveUpload(file: FormDataEntryValue | null, current: string, allowed: string[], fieldName: string) {
   if (!(file instanceof File) || file.size === 0) return current;
-  if (file.size > 6 * 1024 * 1024 || !allowed.includes(file.type)) throw new Error("Invalid file");
+  const maxSize = 6 * 1024 * 1024;
+  if (file.size > maxSize) throw new Error(`فایل ${fieldName} بیشتر از ۶ مگابایت است (${(file.size / 1024 / 1024).toFixed(1)} مگابایت)`);
+  if (!allowed.includes(file.type)) {
+    const allowedNames = allowed.map((t) => t.split("/")[1].toUpperCase()).join(", ");
+    throw new Error(`فرمت فایل ${fieldName} مجاز نیست. فرمت‌های مجاز: ${allowedNames}`);
+  }
   const extensions: Record<string, string> = {
     "image/jpeg": ".jpg",
     "image/png": ".png",
@@ -51,11 +84,11 @@ export async function saveSettings(_prev: FormState, formData: FormData): Promis
   try {
     await requireAdmin();
     const values = Object.fromEntries(formData);
-    values.heroImage = await saveUpload(formData.get("heroFile"), String(values.heroImage ?? ""), ["image/jpeg", "image/png", "image/webp"]);
-    values.aboutImage = await saveUpload(formData.get("aboutFile"), String(values.aboutImage ?? ""), ["image/jpeg", "image/png", "image/webp"]);
-    values.logoUrl = await saveUpload(formData.get("logoFile"), String(values.logoUrl ?? ""), ["image/jpeg", "image/png", "image/webp"]);
-    values.faviconUrl = await saveUpload(formData.get("faviconFile"), String(values.faviconUrl ?? ""), ["image/jpeg", "image/png", "image/webp"]);
-    values.resumeUrl = await saveUpload(formData.get("resumeFile"), String(values.resumeUrl ?? ""), ["application/pdf"]);
+    values.heroImage = await saveUpload(formData.get("heroFile"), String(values.heroImage ?? ""), ["image/jpeg", "image/png", "image/webp"], "تصویر اصلی");
+    values.aboutImage = await saveUpload(formData.get("aboutFile"), String(values.aboutImage ?? ""), ["image/jpeg", "image/png", "image/webp"], "تصویر درباره");
+    values.logoUrl = await saveUpload(formData.get("logoFile"), String(values.logoUrl ?? ""), ["image/jpeg", "image/png", "image/webp"], "لوگو");
+    values.faviconUrl = await saveUpload(formData.get("faviconFile"), String(values.faviconUrl ?? ""), ["image/jpeg", "image/png", "image/webp"], "نماد مرورگر");
+    values.resumeUrl = await saveUpload(formData.get("resumeFile"), String(values.resumeUrl ?? ""), ["application/pdf"], "فایل رزومه");
     const data = settingSchema.parse(values);
     await prisma.siteSetting.upsert({
       where: { id: "main" },
@@ -65,8 +98,12 @@ export async function saveSettings(_prev: FormState, formData: FormData): Promis
     revalidatePath("/", "layout");
     revalidatePath("/admin");
     return { status: "success", message: "اطلاعات اصلی با موفقیت ذخیره شد." };
-  } catch {
-    return { status: "error", message: "خطا در ذخیره اطلاعات اصلی." };
+  } catch (err) {
+    if (err instanceof ZodError) {
+      const { message, errors } = formatZodError(err);
+      return { status: "error", message, errors };
+    }
+    return { status: "error", message: formatUploadError(err) };
   }
 }
 
@@ -74,14 +111,18 @@ export async function saveSkill(_prev: FormState, formData: FormData): Promise<F
   try {
     await requireAdmin();
     const values = Object.fromEntries(formData);
-    values.iconUrl = await saveUpload(formData.get("iconFile"), String(values.iconUrl ?? ""), ["image/jpeg", "image/png", "image/webp"]);
+    values.iconUrl = await saveUpload(formData.get("iconFile"), String(values.iconUrl ?? ""), ["image/jpeg", "image/png", "image/webp"], "لوگوی فناوری");
     const data = skillSchema.parse(values);
     if (data.id) await prisma.skill.update({ where: { id: data.id }, data });
     else await prisma.skill.create({ data });
     revalidatePath("/admin");
     return { status: "success", message: data.id ? "مهارت ویرایش شد." : "مهارت جدید اضافه شد." };
-  } catch {
-    return { status: "error", message: "خطا در ذخیره مهارت." };
+  } catch (err) {
+    if (err instanceof ZodError) {
+      const { message, errors } = formatZodError(err);
+      return { status: "error", message, errors };
+    }
+    return { status: "error", message: formatUploadError(err) };
   }
 }
 
@@ -92,7 +133,7 @@ export async function deleteSkill(_prev: FormState, formData: FormData): Promise
     revalidatePath("/admin");
     return { status: "success", message: "مهارت حذف شد." };
   } catch {
-    return { status: "error", message: "خطا در حذف مهارت." };
+    return { status: "error", message: "خطا در حذف مهارت. ممکن است مهارت قبلاً حذف شده باشد." };
   }
 }
 
@@ -100,7 +141,7 @@ export async function saveProject(_prev: FormState, formData: FormData): Promise
   try {
     await requireAdmin();
     const values = Object.fromEntries(formData);
-    values.imageUrl = await saveUpload(formData.get("imageFile"), String(values.imageUrl ?? ""), ["image/jpeg", "image/png", "image/webp"]);
+    values.imageUrl = await saveUpload(formData.get("imageFile"), String(values.imageUrl ?? ""), ["image/jpeg", "image/png", "image/webp"], "تصویر پروژه");
     values.featured = formData.has("featured") ? "true" : "false";
     values.published = formData.has("published") ? "true" : "false";
     const data = projectSchema.parse(values);
@@ -115,8 +156,12 @@ export async function saveProject(_prev: FormState, formData: FormData): Promise
     revalidatePath("/", "layout");
     revalidatePath("/admin");
     return { status: "success", message: data.id ? "پروژه ویرایش شد." : "پروژه جدید اضافه شد." };
-  } catch {
-    return { status: "error", message: "خطا در ذخیره پروژه." };
+  } catch (err) {
+    if (err instanceof ZodError) {
+      const { message, errors } = formatZodError(err);
+      return { status: "error", message, errors };
+    }
+    return { status: "error", message: formatUploadError(err) };
   }
 }
 
@@ -128,7 +173,7 @@ export async function deleteProject(_prev: FormState, formData: FormData): Promi
     revalidatePath("/admin");
     return { status: "success", message: "پروژه حذف شد." };
   } catch {
-    return { status: "error", message: "خطا در حذف پروژه." };
+    return { status: "error", message: "خطا در حذف پروژه. ممکن است پروژه قبلاً حذف شده باشد." };
   }
 }
 
@@ -136,7 +181,7 @@ export async function savePost(_prev: FormState, formData: FormData): Promise<Fo
   try {
     await requireAdmin();
     const values = Object.fromEntries(formData);
-    values.imageUrl = await saveUpload(formData.get("imageFile"), String(values.imageUrl ?? ""), ["image/jpeg", "image/png", "image/webp"]);
+    values.imageUrl = await saveUpload(formData.get("imageFile"), String(values.imageUrl ?? ""), ["image/jpeg", "image/png", "image/webp"], "تصویر مقاله");
     values.published = formData.has("published") ? "true" : "false";
     values.featured = formData.has("featured") ? "true" : "false";
     values.allowIndex = formData.has("allowIndex") ? "true" : "false";
@@ -154,8 +199,12 @@ export async function savePost(_prev: FormState, formData: FormData): Promise<Fo
     revalidatePath("/", "layout");
     revalidatePath("/admin");
     return { status: "success", message: data.id ? "مقاله ویرایش شد." : "مقاله جدید اضافه شد." };
-  } catch {
-    return { status: "error", message: "خطا در ذخیره مقاله." };
+  } catch (err) {
+    if (err instanceof ZodError) {
+      const { message, errors } = formatZodError(err);
+      return { status: "error", message, errors };
+    }
+    return { status: "error", message: formatUploadError(err) };
   }
 }
 
@@ -167,7 +216,7 @@ export async function deletePost(_prev: FormState, formData: FormData): Promise<
     revalidatePath("/admin");
     return { status: "success", message: "مقاله حذف شد." };
   } catch {
-    return { status: "error", message: "خطا در حذف مقاله." };
+    return { status: "error", message: "خطا در حذف مقاله. ممکن است مقاله قبلاً حذف شده باشد." };
   }
 }
 
@@ -180,8 +229,12 @@ export async function saveExperience(_prev: FormState, formData: FormData): Prom
     revalidatePath("/", "layout");
     revalidatePath("/admin");
     return { status: "success", message: data.id ? "سابقه ویرایش شد." : "سابقه جدید اضافه شد." };
-  } catch {
-    return { status: "error", message: "خطا در ذخیره سابقه." };
+  } catch (err) {
+    if (err instanceof ZodError) {
+      const { message, errors } = formatZodError(err);
+      return { status: "error", message, errors };
+    }
+    return { status: "error", message: "خطا در ذخیره سابقه. لطفاً فیلدها را بررسی کنید." };
   }
 }
 
@@ -193,7 +246,7 @@ export async function deleteExperience(_prev: FormState, formData: FormData): Pr
     revalidatePath("/admin");
     return { status: "success", message: "سابقه حذف شد." };
   } catch {
-    return { status: "error", message: "خطا در حذف سابقه." };
+    return { status: "error", message: "خطا در حذف سابقه. ممکن است سابقه قبلاً حذف شده باشد." };
   }
 }
 
@@ -204,7 +257,7 @@ export async function markMessageRead(_prev: FormState, formData: FormData): Pro
     revalidatePath("/admin");
     return { status: "success", message: "پیام خوانده شد." };
   } catch {
-    return { status: "error", message: "خطا در به‌روزرسانی پیام." };
+    return { status: "error", message: "خطا در به‌روزرسانی پیام. ممکن است پیام وجود نداشته باشد." };
   }
 }
 
@@ -215,6 +268,6 @@ export async function deleteMessage(_prev: FormState, formData: FormData): Promi
     revalidatePath("/admin");
     return { status: "success", message: "پیام حذف شد." };
   } catch {
-    return { status: "error", message: "خطا در حذف پیام." };
+    return { status: "error", message: "خطا در حذف پیام. ممکن است پیام قبلاً حذف شده باشد." };
   }
 }

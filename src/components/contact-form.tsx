@@ -13,10 +13,10 @@ function ContactToast({ state }: { state: ContactState }) {
   const router = useRouter();
   useEffect(() => {
     if (state.status === "success") {
-      toast.success("پیام با موفقیت ارسال شد.");
+      toast.success(state.message || "پیام با موفقیت ارسال شد.");
       router.refresh();
     } else if (state.status === "error") {
-      toast.error("خطا در ارسال پیام.");
+      toast.error(state.message || "خطا در ارسال پیام.");
     }
   }, [state, router]);
   return null;
