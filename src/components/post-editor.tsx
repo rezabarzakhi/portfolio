@@ -18,6 +18,11 @@ function FieldErrors({ state, field }: { state: FormState; field: string }) {
   return <p className="mt-1 text-xs text-red-400">{error}</p>;
 }
 
+function getError(state: FormState, field: string): string | undefined {
+  if (!state || state.status !== "error" || !state.errors) return undefined;
+  return state.errors[field];
+}
+
 export function PostEditor({ post }: { post?: Post }) {
   const [state, action, pending] = useActionState(savePost, initial);
   const router = useRouter();
@@ -39,18 +44,18 @@ export function PostEditor({ post }: { post?: Post }) {
       {post && <input type="hidden" name="id" value={post.id} />}
       <AdminSection title="اطلاعات اصلی">
         <div className="grid gap-5 md:grid-cols-2">
-          <div><AdminInput label="عنوان فارسی" name="titleFa" defaultValue={post?.titleFa} required /><FieldErrors state={state} field="titleFa" /></div>
-          <div><AdminInput label="عنوان انگلیسی" name="titleEn" defaultValue={post?.titleEn} required /><FieldErrors state={state} field="titleEn" /></div>
+          <div><AdminInput label="عنوان فارسی" name="titleFa" defaultValue={post?.titleFa} required error={getError(state, "titleFa")} /><FieldErrors state={state} field="titleFa" /></div>
+          <div><AdminInput label="عنوان انگلیسی" name="titleEn" defaultValue={post?.titleEn} required error={getError(state, "titleEn")} /><FieldErrors state={state} field="titleEn" /></div>
         </div>
         <div className="mt-5 grid gap-5 md:grid-cols-3">
-          <div><AdminInput label="نشانی انگلیسی" name="slug" defaultValue={post?.slug} pattern="[a-z0-9]+(?:-[a-z0-9]+)*" placeholder="article-slug" required /><FieldErrors state={state} field="slug" /></div>
-          <div><AdminInput label="دسته فارسی" name="categoryFa" defaultValue={post?.categoryFa} required /><FieldErrors state={state} field="categoryFa" /></div>
-          <div><AdminInput label="دسته انگلیسی" name="categoryEn" defaultValue={post?.categoryEn} required /><FieldErrors state={state} field="categoryEn" /></div>
+          <div><AdminInput label="نشانی انگلیسی" name="slug" defaultValue={post?.slug} pattern="[a-z0-9]+(?:-[a-z0-9]+)*" placeholder="article-slug" required error={getError(state, "slug")} /><FieldErrors state={state} field="slug" /></div>
+          <div><AdminInput label="دسته فارسی" name="categoryFa" defaultValue={post?.categoryFa} required error={getError(state, "categoryFa")} /><FieldErrors state={state} field="categoryFa" /></div>
+          <div><AdminInput label="دسته انگلیسی" name="categoryEn" defaultValue={post?.categoryEn} required error={getError(state, "categoryEn")} /><FieldErrors state={state} field="categoryEn" /></div>
         </div>
         <div className="mt-5"><AdminInput label="برچسب‌ها با ویرگول" name="tags" defaultValue={post?.tags} placeholder="نکست، طراحی وب، آموزش" /></div>
         <div className="mt-5 grid gap-5 md:grid-cols-2">
-          <div><AdminTextarea label="خلاصه فارسی" name="excerptFa" defaultValue={post?.excerptFa} maxLength={350} required /><FieldErrors state={state} field="excerptFa" /></div>
-          <div><AdminTextarea label="خلاصه انگلیسی" name="excerptEn" defaultValue={post?.excerptEn} maxLength={350} required /><FieldErrors state={state} field="excerptEn" /></div>
+          <div><AdminTextarea label="خلاصه فارسی" name="excerptFa" defaultValue={post?.excerptFa} maxLength={350} required error={getError(state, "excerptFa")} /><FieldErrors state={state} field="excerptFa" /></div>
+          <div><AdminTextarea label="خلاصه انگلیسی" name="excerptEn" defaultValue={post?.excerptEn} maxLength={350} required error={getError(state, "excerptEn")} /><FieldErrors state={state} field="excerptEn" /></div>
         </div>
       </AdminSection>
 
@@ -60,7 +65,7 @@ export function PostEditor({ post }: { post?: Post }) {
 
       <AdminSection title="تصویر شاخص">
         <div className="grid gap-5 md:grid-cols-2">
-          <div><AdminInput label="نشانی تصویر" name="imageUrl" defaultValue={post?.imageUrl} placeholder="یا تصویر را بارگذاری کنید" /><FieldErrors state={state} field="imageUrl" /></div>
+          <div><AdminInput label="نشانی تصویر" name="imageUrl" defaultValue={post?.imageUrl} placeholder="یا تصویر را بارگذاری کنید" error={getError(state, "imageUrl")} /><FieldErrors state={state} field="imageUrl" /></div>
           <ImageUpload name="imageFile" label="تصویر شاخص" currentUrl={post?.imageUrl || undefined} />
         </div>
         <div className="mt-5 grid gap-5 md:grid-cols-2"><AdminInput label="متن جایگزین فارسی" name="imageAltFa" defaultValue={post?.imageAltFa} maxLength={180} /><AdminInput label="متن جایگزین انگلیسی" name="imageAltEn" defaultValue={post?.imageAltEn} maxLength={180} /></div>
@@ -68,12 +73,12 @@ export function PostEditor({ post }: { post?: Post }) {
 
       <AdminSection title="تنظیمات موتور جست‌وجو">
         <div className="grid gap-5 md:grid-cols-2">
-          <div><AdminInput label="عنوان جست‌وجوی فارسی" name="seoTitleFa" defaultValue={post?.seoTitleFa || post?.titleFa} maxLength={70} required /><FieldErrors state={state} field="seoTitleFa" /></div>
-          <div><AdminInput label="عنوان جست‌وجوی انگلیسی" name="seoTitleEn" defaultValue={post?.seoTitleEn || post?.titleEn} maxLength={70} required /><FieldErrors state={state} field="seoTitleEn" /></div>
+          <div><AdminInput label="عنوان جست‌وجوی فارسی" name="seoTitleFa" defaultValue={post?.seoTitleFa || post?.titleFa} maxLength={70} required error={getError(state, "seoTitleFa")} /><FieldErrors state={state} field="seoTitleFa" /></div>
+          <div><AdminInput label="عنوان جست‌وجوی انگلیسی" name="seoTitleEn" defaultValue={post?.seoTitleEn || post?.titleEn} maxLength={70} required error={getError(state, "seoTitleEn")} /><FieldErrors state={state} field="seoTitleEn" /></div>
         </div>
         <div className="mt-5 grid gap-5 md:grid-cols-2">
-          <div><AdminTextarea label="توضیحات جست‌وجوی فارسی" name="seoDescriptionFa" defaultValue={post?.seoDescriptionFa} minLength={50} maxLength={170} required /><FieldErrors state={state} field="seoDescriptionFa" /></div>
-          <div><AdminTextarea label="توضیحات جست‌وجوی انگلیسی" name="seoDescriptionEn" defaultValue={post?.seoDescriptionEn} minLength={50} maxLength={170} required /><FieldErrors state={state} field="seoDescriptionEn" /></div>
+          <div><AdminTextarea label="توضیحات جست‌وجوی فارسی" name="seoDescriptionFa" defaultValue={post?.seoDescriptionFa} minLength={50} maxLength={170} required error={getError(state, "seoDescriptionFa")} /><FieldErrors state={state} field="seoDescriptionFa" /></div>
+          <div><AdminTextarea label="توضیحات جست‌وجوی انگلیسی" name="seoDescriptionEn" defaultValue={post?.seoDescriptionEn} minLength={50} maxLength={170} required error={getError(state, "seoDescriptionEn")} /><FieldErrors state={state} field="seoDescriptionEn" /></div>
         </div>
         <div className="mt-5"><AdminInput label="نشانی مرجع اختیاری" name="canonicalUrl" type="url" defaultValue={post?.canonicalUrl ?? ""} /></div>
         <label className="mt-5 flex items-center gap-2"><input type="checkbox" name="allowIndex" value="true" defaultChecked={post?.allowIndex ?? true} /> اجازه نمایش در موتورهای جست‌وجو</label>

@@ -1,11 +1,11 @@
 import type { InputHTMLAttributes, TextareaHTMLAttributes } from "react";
 
-export function AdminInput({ label, ...props }: InputHTMLAttributes<HTMLInputElement> & { label: string }) {
-  return <label><span className="form-label">{label}</span><input className="form-field" {...props} /></label>;
+export function AdminInput({ label, error, ...props }: InputHTMLAttributes<HTMLInputElement> & { label: string; error?: string }) {
+  return <label><span className="form-label">{label}</span><input className={`form-field${error ? " form-field-invalid" : ""}`} {...props} /></label>;
 }
 
-export function AdminTextarea({ label, ...props }: TextareaHTMLAttributes<HTMLTextAreaElement> & { label: string }) {
-  return <label><span className="form-label">{label}</span><textarea className="form-field min-h-28" {...props} /></label>;
+export function AdminTextarea({ label, error, ...props }: TextareaHTMLAttributes<HTMLTextAreaElement> & { label: string; error?: string }) {
+  return <label><span className="form-label">{label}</span><textarea className={`form-field min-h-28${error ? " form-field-invalid" : ""}`} {...props} /></label>;
 }
 
 export function AdminSection({ title, count, children }: { title: string; count?: number; children: React.ReactNode }) {
