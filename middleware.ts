@@ -13,6 +13,14 @@ function isStaticAsset(pathname: string): boolean {
   );
 }
 
+function getSessionToken(request: NextRequest): string | null {
+  return (
+    request.cookies.get("__Secure-authjs.session-token")?.value ??
+    request.cookies.get("authjs.session-token")?.value ??
+    null
+  );
+}
+
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
@@ -21,7 +29,7 @@ export function middleware(request: NextRequest) {
   }
 
   if (isAdminRoute(pathname)) {
-    const token = request.cookies.get("authjs.session-token")?.value;
+    const token = getSessionToken(request);
     if (!token) {
       const loginUrl = new URL("/admin/login", request.url);
       loginUrl.searchParams.set("callbackUrl", pathname);
