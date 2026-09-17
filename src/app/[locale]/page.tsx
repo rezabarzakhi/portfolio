@@ -47,7 +47,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
         </div>
       </section>
 
-      <section className="ambient-section ambient-section-right section-alt section-space border-y border-white/5">
+      <section id="about" className="ambient-section ambient-section-right section-alt section-space border-y border-white/5">
         <div className="container-shell grid items-center gap-14 lg:grid-cols-[0.72fr_1fr]">
           <PortraitFrame src={setting.aboutImage} alt={t.aboutLabel} />
           <div>
@@ -58,7 +58,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
         </div>
       </section>
 
-      <section className="ambient-section section-space">
+      <section id="skills" className="ambient-section section-space">
         <div className="container-shell">
           <SectionHeading eyebrow={t.skillsLabel} title={t.skillsTitle} />
           <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -74,21 +74,21 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
         </div>
       </section>
 
-      <section className="ambient-section ambient-section-right section-alt section-space border-y border-white/5">
+      <section id="projects" className="ambient-section ambient-section-right section-alt section-space border-y border-white/5">
         <div className="container-shell">
           <div className="flex flex-wrap items-end justify-between gap-6"><SectionHeading eyebrow={t.projectsLabel} title={t.projectsTitle} /><Link href={`/${locale}/projects`} className="button-secondary">{t.allProjects}<Arrow size={17} /></Link></div>
           <div className="mt-12 grid gap-7">{projects.slice(0, 4).map((project) => <ProjectCard key={project.id} project={project} locale={locale} />)}</div>
         </div>
       </section>
 
-      <section className="ambient-section section-space">
+      <section id="blog" className="ambient-section section-space">
         <div className="container-shell">
           <div className="flex flex-wrap items-end justify-between gap-6"><SectionHeading eyebrow={t.blogLabel} title={t.blogTitle} /><Link href={`/${locale}/blog`} className="button-secondary">{t.allPosts}<Arrow size={17} /></Link></div>
           <div className="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-3">{posts.slice(0, 3).map((post) => <PostCard key={post.id} post={post} locale={locale} />)}</div>
         </div>
       </section>
 
-      <section className="ambient-section ambient-section-right section-alt section-space border-t border-white/5">
+      <section id="contact" className="ambient-section ambient-section-right section-alt section-space border-t border-white/5">
         <div className="container-shell grid gap-12 lg:grid-cols-[0.7fr_1fr]">
           <div><SectionHeading eyebrow={t.contactLabel} title={t.contactTitle} /><p className="mt-5 leading-8 text-gray-400">{t.contactDescription}</p><a href={`mailto:${setting.email}`} className="mt-7 inline-flex items-center gap-2 text-gray-200 hover:text-white"><Mail size={18} />{setting.email}</a></div>
           <ContactForm locale={locale} />

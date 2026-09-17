@@ -15,12 +15,14 @@ export function SiteHeader({ locale, logoUrl }: { locale: Locale; logoUrl: strin
   const t = dictionary[locale];
   const alternateLocale = locale === "fa" ? "en" : "fa";
   const alternatePath = pathname.replace(/^\/(fa|en)/, `/${alternateLocale}/`);
-  const nav = [
-    [t.nav.about, `/${locale}/about`],
-    [t.nav.projects, `/${locale}/projects`],
-    [t.nav.blog, `/${locale}/blog`],
-    [t.nav.resume, `/${locale}/resume`],
-    [t.nav.contact, `/${locale}/contact`],
+  const onHome = pathname === `/${locale}`;
+
+  const items = [
+    { label: t.nav.about, href: onHome ? `/${locale}/#about` : `/${locale}/about` },
+    { label: t.nav.projects, href: onHome ? `/${locale}/#projects` : `/${locale}/projects` },
+    { label: t.nav.blog, href: onHome ? `/${locale}/#blog` : `/${locale}/blog` },
+    { label: t.nav.resume, href: `/${locale}/resume` },
+    { label: t.nav.contact, href: onHome ? `/${locale}/#contact` : `/${locale}/contact` },
   ];
 
   return (
@@ -30,9 +32,9 @@ export function SiteHeader({ locale, logoUrl }: { locale: Locale; logoUrl: strin
           {logoUrl ? <Image src={logoUrl} alt="" width={160} height={48} className="h-10 w-auto object-contain" priority /> : <>&lt;<span className="text-gray-300">RB</span>/&gt;</>}
         </Link>
         <nav className="hidden items-center gap-7 text-sm text-gray-300 lg:flex" aria-label="Main navigation">
-          {nav.map(([label, href]) => (
-            <Link key={href} href={href} className="transition-colors hover:text-white">
-              {label}
+          {items.map((item) => (
+            <Link key={item.href} href={item.href} className="transition-colors hover:text-white">
+              {item.label}
             </Link>
           ))}
         </nav>
@@ -54,14 +56,14 @@ export function SiteHeader({ locale, logoUrl }: { locale: Locale; logoUrl: strin
       </div>
       {open && (
         <nav className="container-shell grid gap-1 border-t border-white/5 py-4 lg:hidden">
-          {nav.map(([label, href]) => (
+          {items.map((item) => (
             <Link
-              key={href}
-              href={href}
+              key={item.href}
+              href={item.href}
               className="rounded-lg px-3 py-3 text-gray-300 hover:bg-white/5 hover:text-white"
               onClick={() => setOpen(false)}
             >
-              {label}
+              {item.label}
             </Link>
           ))}
         </nav>
