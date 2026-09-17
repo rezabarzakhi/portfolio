@@ -1,6 +1,7 @@
 "use server";
 
 import { AuthError } from "next-auth";
+import { headers } from "next/headers";
 import { mkdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { randomUUID } from "node:crypto";
@@ -9,6 +10,7 @@ import { redirect } from "next/navigation";
 import { auth, signIn, signOut } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { experienceSchema, postSchema, projectSchema, settingSchema, skillSchema } from "@/lib/validation";
+import { checkRateLimit } from "@/lib/rate-limit";
 import { ZodError } from "zod";
 
 export type FormState = {
@@ -69,6 +71,16 @@ async function saveUpload(file: FormDataEntryValue | null, current: string, allo
 
 export async function loginAction(_state: string | undefined, formData: FormData) {
   try {
+    const hdrs = await headers();
+    const forwarded = hdrs.get("x-forwarded-for");
+    const ip = forwarded ? forwarded.split(",")[0].trim() : "127.0.0.1";
+
+    const rl = checkRateLimit(ip, { windowMs: 60_000, max: 5, keyPrefix: "login" });
+    if (!rl.allowed) {
+      const waitSec = Math.ceil(rl.retryAfterMs / 1000);
+      return `تلاش‌های شما زیاد است. لطفاً ${waitSec} ثانیه صبر کنید.`;
+    }
+
     await signIn("credentials", { identifier: formData.get("identifier"), password: formData.get("password"), redirectTo: "/admin" });
   } catch (error) {
     if (error instanceof AuthError) return "ایمیل یا گذرواژه صحیح نیست.";

@@ -1,8 +1,10 @@
 "use server";
 
+import { headers } from "next/headers";
 import { prisma } from "@/lib/prisma";
 import { sendContactEmail } from "@/lib/mail";
 import { contactSchema } from "@/lib/validation";
+import { checkRateLimit } from "@/lib/rate-limit";
 
 export type ContactState = { status: "idle" | "success" | "error"; message?: string };
 
@@ -15,6 +17,16 @@ export async function submitContact(_state: ContactState, formData: FormData): P
   if (result.data.website) return { status: "error", message: "اطلاعات ارسالی نامعتبر است." };
 
   try {
+    const hdrs = await headers();
+    const forwarded = hdrs.get("x-forwarded-for");
+    const ip = forwarded ? forwarded.split(",")[0].trim() : "127.0.0.1";
+
+    const rl = checkRateLimit(ip, { windowMs: 60_000, max: 5, keyPrefix: "contact" });
+    if (!rl.allowed) {
+      const waitSec = Math.ceil(rl.retryAfterMs / 1000);
+      return { status: "error", message: `درخواست‌های شما زیاد است. لطفاً ${waitSec} ثانیه صبر کنید.` };
+    }
+
     const data = {
       name: result.data.name,
       email: result.data.email,
