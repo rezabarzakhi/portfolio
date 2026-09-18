@@ -33,15 +33,23 @@ export function ToastContainer() {
     };
   }, []);
 
-  if (!list.length) return null;
-
   return (
-    <div className="toast-container">
-      {list.map((t) => (
-        <div key={t.id} className={`toast toast-${t.type} ${t.long ? "toast-long" : ""}`} role={t.type === "error" ? "alert" : "status"}>
-          {t.message}
+    <>
+      <div className="sr-only" role="status" aria-live="polite" aria-atomic="true">
+        {list.filter((t) => t.type === "success").map((t) => t.message).join(" ")}
+      </div>
+      <div className="sr-only" role="alert" aria-live="assertive" aria-atomic="true">
+        {list.filter((t) => t.type === "error").map((t) => t.message).join(" ")}
+      </div>
+      {list.length > 0 && (
+        <div className="toast-container" aria-hidden="true">
+          {list.map((t) => (
+            <div key={t.id} className={`toast toast-${t.type} ${t.long ? "toast-long" : ""}`}>
+              {t.message}
+            </div>
+          ))}
         </div>
-      ))}
-    </div>
+      )}
+    </>
   );
 }

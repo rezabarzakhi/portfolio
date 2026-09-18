@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Vazirmatn } from "next/font/google";
 import { notFound } from "next/navigation";
 import "../globals.css";
+import { AxeBuilder } from "@/components/axe-builder";
 import { BackToTop } from "@/components/back-to-top";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
@@ -62,6 +63,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
         <script dangerouslySetInnerHTML={{ __html: "try{document.documentElement.dataset.theme=localStorage.getItem('theme')||'dark'}catch(e){document.documentElement.dataset.theme='dark'}" }} />
       </head>
       <body>
+        {process.env.NODE_ENV !== "production" && <AxeBuilder />}
         <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:start-4 focus:top-4 focus:z-[100] focus:rounded-lg focus:bg-[#526d82] focus:px-4 focus:py-2 focus:text-white">پرش به محتوای اصلی</a>
         <div className="site-shell" dir={locale === "fa" ? "rtl" : "ltr"}>
           <SiteHeader locale={locale} logoUrl={setting.logoUrl} />
