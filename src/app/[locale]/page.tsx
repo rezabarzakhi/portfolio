@@ -4,6 +4,7 @@ import { ArrowLeft, ArrowRight, Download, Mail, MapPin } from "lucide-react";
 import { notFound } from "next/navigation";
 import { ContactForm } from "@/components/contact-form";
 import { PostCard, ProjectCard } from "@/components/content-cards";
+import { JsonLd } from "@/components/json-ld";
 import { PortraitFrame } from "@/components/portrait-frame";
 import { SectionHeading } from "@/components/section-heading";
 import { SocialLinks } from "@/components/site-footer";
@@ -23,9 +24,34 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   const location = locale === "fa" ? setting.locationFa : setting.locationEn;
   const availability = locale === "fa" ? setting.availabilityFa : setting.availabilityEn;
   const Arrow = locale === "fa" ? ArrowLeft : ArrowRight;
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://rezabarzakhi.ir";
+  const jsonLd = [
+    {
+      "@context": "https://schema.org",
+      "@type": "Person",
+      name: setting.nameEn,
+      url: siteUrl,
+      email: `mailto:${setting.email}`,
+      jobTitle: setting.roleEn,
+      address: { "@type": "PostalAddress", addressLocality: "Mashhad", addressCountry: "IR" },
+      sameAs: [setting.githubUrl, setting.instagramUrl, setting.telegramUrl, setting.twitterUrl].filter(Boolean),
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      name: setting.nameEn,
+      url: siteUrl,
+      potentialAction: {
+        "@type": "SearchAction",
+        target: { "@type": "EntryPoint", urlTemplate: `${siteUrl}/${locale}/blog?q={search_term_string}` },
+        "query-input": "required name=search_term_string",
+      },
+    },
+  ];
 
   return (
     <>
+      <JsonLd data={jsonLd} />
       <section className="ambient-section grid-lines pt-36 pb-20 sm:pt-44 sm:pb-24">
         <div className="container-shell grid items-center gap-16 lg:grid-cols-[1fr_0.65fr]">
           <div>

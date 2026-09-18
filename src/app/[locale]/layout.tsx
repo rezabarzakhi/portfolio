@@ -23,13 +23,32 @@ export async function generateMetadata({ params }: LayoutProps): Promise<Metadat
   const title = locale === "fa" ? `${setting.nameFa} | ${setting.roleFa}` : `${setting.nameEn} | ${setting.roleEn}`;
   const description = locale === "fa" ? setting.seoDescriptionFa : setting.seoDescriptionEn;
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://rezabarzakhi.ir";
+  const ogImage = `${siteUrl}/og?title=${encodeURIComponent(locale === "fa" ? setting.nameFa : setting.nameEn)}`;
   return {
     metadataBase: new URL(siteUrl),
     title: { default: title, template: `%s | ${locale === "fa" ? setting.nameFa : setting.nameEn}` },
     description,
-    alternates: { languages: { fa: "/fa", en: "/en" } },
+    alternates: {
+      canonical: "/",
+      languages: { fa: "/fa", en: "/en", "x-default": "/fa" },
+    },
     icons: { icon: setting.faviconUrl || "/default-mark.svg" },
-    openGraph: { title, description, type: "website", locale: locale === "fa" ? "fa_IR" : "en_US", images: [setting.heroImage] },
+    openGraph: {
+      title,
+      description,
+      type: "website",
+      locale: locale === "fa" ? "fa_IR" : "en_US",
+      alternateLocale: locale === "fa" ? "en_US" : "fa_IR",
+      url: `/${locale}`,
+      siteName: setting.nameEn,
+      images: [{ url: ogImage, width: 1200, height: 630 }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [ogImage],
+    },
   };
 }
 
