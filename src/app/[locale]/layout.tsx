@@ -7,6 +7,7 @@ import { BackToTop } from "@/components/back-to-top";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { ToastContainer } from "@/components/toast";
+import { ViewTracker } from "@/components/view-tracker";
 import { getPublicContent, isLocale } from "@/lib/content";
 
 const vazirmatn = Vazirmatn({
@@ -72,6 +73,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
         </div>
         <BackToTop />
         <ToastContainer />
+        <ViewTracker locale={locale} />
       </body>
     </html>
   );

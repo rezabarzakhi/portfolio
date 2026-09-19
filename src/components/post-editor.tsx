@@ -27,6 +27,7 @@ export function PostEditor({ post }: { post?: Post }) {
   const [state, action, pending] = useActionState(savePost, initial);
   const router = useRouter();
   const publishedAt = post?.publishedAt?.toISOString().slice(0, 16);
+  const scheduledAt = post?.scheduledAt?.toISOString().slice(0, 16);
 
   useEffect(() => {
     if (!state) return;
@@ -86,6 +87,7 @@ export function PostEditor({ post }: { post?: Post }) {
 
       <AdminSection title="انتشار">
         <div className="grid gap-5 md:grid-cols-2"><AdminInput label="زمان انتشار" name="publishedAt" type="datetime-local" defaultValue={publishedAt} /><div className="flex flex-wrap items-end gap-6 pb-3"><label className="flex items-center gap-2"><input type="checkbox" name="featured" value="true" defaultChecked={post?.featured} /> مقاله منتخب</label><label className="flex items-center gap-2"><input type="checkbox" name="published" value="true" defaultChecked={post?.published} /> منتشر شود</label></div></div>
+        <div className="mt-5 grid gap-5 md:grid-cols-2"><AdminInput label="زمان‌بندی انتشار خودکار" name="scheduledAt" type="datetime-local" defaultValue={scheduledAt} /><p className="self-end text-sm text-gray-500">اگر زمان‌بندی را در آینده تنظیم کنید، مقاله به‌صورت خودکار پس از آن زمان در سایت نمایش داده می‌شود.</p></div>
       </AdminSection>
 
       <div className="sticky bottom-4 z-20 flex justify-end rounded-2xl border border-white/10 bg-[#1a2332]/95 p-4 shadow-2xl backdrop-blur"><button className="button-primary min-w-40" type="submit" disabled={pending}>{pending ? "در حال ذخیره..." : post ? "ذخیره تغییرات" : "ایجاد مقاله"}</button></div>

@@ -97,6 +97,7 @@ export const postSchema = z.object({
   allowIndex: formBoolean.default(true),
   published: formBoolean.default(false),
   publishedAt: z.string().optional(),
+  scheduledAt: z.string().optional(),
 });
 
 export const experienceSchema = z.object({

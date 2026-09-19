@@ -9,6 +9,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { auth, signIn, signOut } from "@/auth";
 import { prisma } from "@/lib/prisma";
+import type { Prisma } from "@prisma/client";
 import { experienceSchema, postSchema, projectSchema, settingSchema, skillSchema } from "@/lib/validation";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { ZodError } from "zod";
@@ -45,6 +46,12 @@ function formatUploadError(err: unknown): string {
 async function requireAdmin() {
   const session = await auth();
   if (!session?.user) redirect("/admin/login");
+}
+
+async function recordRevision(entityType: string, entityId: string, title: string, snapshot: Prisma.InputJsonValue) {
+  await prisma.contentRevision.create({
+    data: { entityType, entityId, title, snapshot },
+  });
 }
 
 async function saveUpload(file: FormDataEntryValue | null, current: string, allowed: string[], fieldName: string) {
@@ -127,6 +134,7 @@ export async function saveSkill(_prev: FormState, formData: FormData): Promise<F
     const data = skillSchema.parse(values);
     if (data.id) await prisma.skill.update({ where: { id: data.id }, data });
     else await prisma.skill.create({ data });
+    await recordRevision("skill", data.id ?? data.name, data.name, data);
     revalidatePath("/admin");
     return { status: "success", message: data.id ? "مهارت ویرایش شد." : "مهارت جدید اضافه شد." };
   } catch (err) {
@@ -163,8 +171,13 @@ export async function saveProject(_prev: FormState, formData: FormData): Promise
       repositoryUrl: data.repositoryUrl || null,
       completedAt: data.completedAt ? new Date(data.completedAt) : null,
     };
+    let projectId = data.id ?? data.slug;
     if (data.id) await prisma.project.update({ where: { id: data.id }, data: payload });
-    else await prisma.project.create({ data: payload });
+    else {
+      const created = await prisma.project.create({ data: payload });
+      projectId = created.id;
+    }
+    await recordRevision("project", projectId, data.titleFa, data);
     revalidatePath("/", "layout");
     revalidatePath("/admin");
     return { status: "success", message: data.id ? "پروژه ویرایش شد." : "پروژه جدید اضافه شد." };
@@ -202,12 +215,18 @@ export async function savePost(_prev: FormState, formData: FormData): Promise<Fo
     const payload = {
       ...data,
       canonicalUrl: data.canonicalUrl || null,
+      scheduledAt: data.scheduledAt ? new Date(data.scheduledAt) : null,
       publishedAt: data.published
         ? data.publishedAt ? new Date(data.publishedAt) : existing?.publishedAt ?? new Date()
         : null,
     };
+    let postId = data.id ?? data.slug;
     if (data.id) await prisma.post.update({ where: { id: data.id }, data: payload });
-    else await prisma.post.create({ data: payload });
+    else {
+      const created = await prisma.post.create({ data: payload });
+      postId = created.id;
+    }
+    await recordRevision("post", postId, data.titleFa, data);
     revalidatePath("/", "layout");
     revalidatePath("/admin");
     return { status: "success", message: data.id ? "مقاله ویرایش شد." : "مقاله جدید اضافه شد." };
@@ -238,6 +257,7 @@ export async function saveExperience(_prev: FormState, formData: FormData): Prom
     const data = experienceSchema.parse(Object.fromEntries(formData));
     if (data.id) await prisma.experience.update({ where: { id: data.id }, data });
     else await prisma.experience.create({ data });
+    await recordRevision("experience", data.id ?? data.titleFa, data.titleFa, data);
     revalidatePath("/", "layout");
     revalidatePath("/admin");
     return { status: "success", message: data.id ? "سابقه ویرایش شد." : "سابقه جدید اضافه شد." };

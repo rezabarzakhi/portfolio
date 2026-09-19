@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BriefcaseBusiness, FileText, Gauge, Inbox, Settings, Sparkles, UserRound } from "lucide-react";
+import { BarChart3, BriefcaseBusiness, FileText, Gauge, History, Inbox, Settings, Sparkles, UserRound } from "lucide-react";
 
 const links = [
   { href: "/admin", label: "پیشخوان", icon: Gauge },
@@ -12,6 +12,8 @@ const links = [
   { href: "/admin/posts", label: "مقاله‌ها", icon: FileText },
   { href: "/admin/resume", label: "رزومه", icon: UserRound },
   { href: "/admin/messages", label: "پیام‌ها", icon: Inbox },
+  { href: "/admin/stats", label: "آمار بازدید", icon: BarChart3 },
+  { href: "/admin/revisions", label: "تاریخچه تغییرات", icon: History },
 ];
 
 export function AdminNavigation() {

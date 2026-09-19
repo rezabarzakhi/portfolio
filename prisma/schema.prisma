@@ -100,6 +100,7 @@ model Post {
   allowIndex    Boolean  @default(true)
   published     Boolean  @default(false)
   publishedAt   DateTime?
+  scheduledAt   DateTime?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 }
@@ -128,4 +129,25 @@ model ContactMessage {
   locale    String   @default("fa")
   read      Boolean  @default(false)
   createdAt DateTime @default(now())
+}
+
+model ContentRevision {
+  id         String   @id @default(cuid())
+  entityType String
+  entityId   String
+  title      String   @default("")
+  snapshot   Json
+  createdAt  DateTime @default(now())
+
+  @@index([entityType, entityId, createdAt])
+}
+
+model PageView {
+  id        String   @id @default(cuid())
+  path      String
+  locale    String   @default("fa")
+  referrer  String   @default("")
+  createdAt DateTime @default(now())
+
+  @@index([path, createdAt])
 }

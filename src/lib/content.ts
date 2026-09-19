@@ -95,6 +95,7 @@ export const defaultPosts: Post[] = [
     allowIndex: true,
     published: true,
     publishedAt: new Date("2026-01-01"),
+    scheduledAt: null,
     ...timestamps,
   },
 ];
@@ -144,7 +145,12 @@ export async function getPublicContent() {
       prisma.siteSetting.findUnique({ where: { id: "main" } }),
       prisma.skill.findMany({ orderBy: { sortOrder: "asc" } }),
       prisma.project.findMany({ where: { published: true }, orderBy: { createdAt: "desc" } }),
-      prisma.post.findMany({ where: { published: true }, orderBy: { publishedAt: "desc" } }),
+      prisma.post.findMany({
+        where: {
+          OR: [{ published: true }, { scheduledAt: { lte: new Date() } }],
+        },
+        orderBy: { publishedAt: "desc" },
+      }),
       prisma.experience.findMany({ orderBy: { sortOrder: "asc" } }),
     ]);
 
