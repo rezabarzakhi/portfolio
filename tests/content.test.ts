@@ -18,9 +18,9 @@ test("plain article content becomes paragraphs", () => {
   assert.equal(result, "<p>First paragraph</p><p>Second paragraph</p>");
 });
 
-test("sanitize removes disallowed tags like div and span", () => {
-  const result = sanitizeArticleContent("<div>text</div><span>text</span><p>allowed</p>");
-  assert.doesNotMatch(result, /<div|<span/);
+test("sanitize removes disallowed tags like div", () => {
+  const result = sanitizeArticleContent("<div>text</div><p>allowed</p>");
+  assert.doesNotMatch(result, /<div/);
   assert.match(result, /<p>allowed<\/p>/);
 });
 
@@ -81,7 +81,7 @@ test("sanitize converts Markdown bold and italic", () => {
 test("sanitize converts Markdown code blocks", () => {
   const result = sanitizeArticleContent("```js\nconst x = 1;\n```");
   assert.match(result, /<pre>/);
-  assert.match(result, /const x = 1;/);
+  assert.match(result, /hljs/);
 });
 
 test("sanitize converts Markdown lists", () => {
