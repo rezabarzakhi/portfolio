@@ -21,13 +21,24 @@ function looksLikeMarkdown(content: string): boolean {
 
 marked.setOptions({ breaks: true, gfm: true });
 
+function stripCmsHtml(html: string): string {
+  return html
+    .replace(/<\/?pre[^>]*>/gi, "")
+    .replace(/<br\s*\/?>/gi, "\n")
+    .replace(/&gt;/g, ">")
+    .replace(/&lt;/g, "<")
+    .replace(/&amp;/g, "&")
+    .replace(/&nbsp;/g, " ");
+}
+
 export function sanitizeArticleContent(content: string) {
   let source: string;
 
   if (/<[a-z][\s\S]*>/i.test(content) && !looksLikeMarkdown(content)) {
     source = content;
   } else if (looksLikeMarkdown(content)) {
-    source = marked.parse(content) as string;
+    const stripped = stripCmsHtml(content);
+    source = marked.parse(stripped) as string;
   } else {
     source = content
       .split(/\n{2,}/)
