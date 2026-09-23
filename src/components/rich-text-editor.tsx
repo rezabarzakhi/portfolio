@@ -96,7 +96,7 @@ export function RichTextEditor({ name, label, initialValue = "", direction }: { 
   return (
     <div>
       <span className="form-label">{label}</span>
-      <div className="overflow-hidden rounded-xl border border-white/10 bg-[#1a2332]/80 backdrop-blur-sm">
+      <div className="overflow-hidden rounded-xl border border-white/10 bg-[#1a2332]/80 backdrop-blur-sm max-w-full">
         <EditorToolbar onExecCommand={execCommand} onToggleMode={toggleMode} mode={mode} />
         {mode === "visual" ? (
           <div
@@ -111,6 +111,7 @@ export function RichTextEditor({ name, label, initialValue = "", direction }: { 
         ) : (
           <textarea
             className="admin-editor min-h-80 w-full resize-y border-0 bg-transparent p-5 font-mono text-sm leading-7 text-gray-200 outline-none"
+            style={{ overflowWrap: "break-word", wordBreak: "break-word", maxWidth: "100%" }}
             dir={direction}
             value={markdownText}
             onChange={(event) => {
