@@ -94,14 +94,14 @@ export function RichTextEditor({ name, label, initialValue = "", direction }: { 
   }, [mode, html, markdownText]);
 
   return (
-    <div>
+    <div className="min-w-0">
       <span className="form-label">{label}</span>
-      <div className="overflow-hidden rounded-xl border border-white/10 bg-[#1a2332]/80 backdrop-blur-sm max-w-full">
+      <div className="w-full min-w-0 overflow-hidden rounded-xl border border-white/10 bg-[#1a2332]/80 backdrop-blur-sm">
         <EditorToolbar onExecCommand={execCommand} onToggleMode={toggleMode} mode={mode} />
         {mode === "visual" ? (
           <div
             ref={editorRef}
-            className="admin-editor min-h-80 p-5 leading-8 text-gray-200 outline-none"
+            className="admin-editor min-h-80 w-full min-w-0 p-5 leading-8 text-gray-200 outline-none"
             contentEditable
             dir={direction}
             suppressContentEditableWarning
