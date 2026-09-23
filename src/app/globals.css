@@ -336,6 +336,12 @@ html[data-theme="light"] .theme-dark-icon {
   margin-top: 1.5rem;
 }
 
+.admin-editor {
+  overflow-wrap: break-word;
+  word-break: break-word;
+  overflow-x: auto;
+}
+
 .admin-editor h2,
 .prose-content h2 {
   margin-block: 2rem 0.8rem;
