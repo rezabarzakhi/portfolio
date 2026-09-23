@@ -66,6 +66,45 @@ test("sanitize handles list content", () => {
   assert.match(result, /<li>Item 2<\/li>/);
 });
 
+test("sanitize converts Markdown headings to HTML", () => {
+  const result = sanitizeArticleContent("## Title\n\nParagraph");
+  assert.match(result, /<h2>Title<\/h2>/);
+  assert.match(result, /<p>Paragraph<\/p>/);
+});
+
+test("sanitize converts Markdown bold and italic", () => {
+  const result = sanitizeArticleContent("**bold** and *italic*");
+  assert.match(result, /<strong>bold<\/strong>/);
+  assert.match(result, /<em>italic<\/em>/);
+});
+
+test("sanitize converts Markdown code blocks", () => {
+  const result = sanitizeArticleContent("```js\nconst x = 1;\n```");
+  assert.match(result, /<pre>/);
+  assert.match(result, /const x = 1;/);
+});
+
+test("sanitize converts Markdown lists", () => {
+  const result = sanitizeArticleContent("- Item 1\n- Item 2\n- Item 3");
+  assert.match(result, /<ul>/);
+  assert.match(result, /<li>Item 1<\/li>/);
+  assert.match(result, /<li>Item 2<\/li>/);
+});
+
+test("sanitize converts Markdown links", () => {
+  const result = sanitizeArticleContent("[link](https://example.com)");
+  assert.match(result, /href="https:\/\/example\.com"/);
+  assert.match(result, />link<\/a>/);
+});
+
+test("sanitize converts Markdown tables", () => {
+  const md = "| Name | Value |\n|---|---|\n| A | 1 |\n| B | 2 |";
+  const result = sanitizeArticleContent(md);
+  assert.match(result, /<table>/);
+  assert.match(result, /<th>Name<\/th>/);
+  assert.match(result, /<td>A<\/td>/);
+});
+
 // ── loginSchema (existing + more) ────────────────────────────
 
 test("login accepts username identifiers", () => {

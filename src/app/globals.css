@@ -330,6 +330,9 @@ html[data-theme="light"] .theme-dark-icon {
   color: var(--muted);
   font-size: 1.05rem;
   line-height: 2;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  overflow-x: auto;
 }
 
 .prose-content p + p {
@@ -391,6 +394,28 @@ html[data-theme="light"] .theme-dark-icon {
   padding: 1rem;
   color: #dde6ed;
   font-family: monospace;
+  max-width: 100%;
+}
+
+.prose-content table,
+.admin-editor table {
+  display: block;
+  overflow-x: auto;
+  max-width: 100%;
+  margin-block: 1.5rem;
+  border-collapse: collapse;
+}
+
+.prose-content th,
+.prose-content td,
+.admin-editor th,
+.admin-editor td {
+  border: 1px solid rgba(255,255,255,0.1);
+  padding: 0.5rem 0.75rem;
+}
+
+.prose-content th {
+  background: rgba(255,255,255,0.05);
 }
 
 .admin-editor img,
