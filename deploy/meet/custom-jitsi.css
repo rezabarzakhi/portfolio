@@ -1,168 +1,404 @@
-/* Portfolio theme for Jitsi Meet */
+/* ============================================================
+   Portfolio Theme for Jitsi Meet — matches rezabarzakhi.ir
+   ============================================================ */
+@import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700&display=swap');
 
 :root {
-  --background: #1a2332;
-  --background-alt: #27374d;
-  --foreground: #dde6ed;
+  --bg: #1a2332;
+  --surface: #27374d;
+  --surface-soft: rgba(39, 55, 77, 0.6);
+  --border: rgba(82, 109, 130, 0.58);
+  --fg: #dde6ed;
+  --muted: #9db2bf;
   --accent: #526d82;
   --accent-deep: #27374d;
+  --radius: 0.8rem;
+  --radius-lg: 1rem;
+  --blur: 18px;
 }
 
-/* Override Jitsi background colors */
-body,
+/* ---- Ambient background ---- */
+body {
+  background:
+    radial-gradient(circle at 8% 18%, rgba(157, 178, 191, 0.08), transparent 24rem),
+    radial-gradient(circle at 92% 48%, rgba(82, 109, 130, 0.1), transparent 28rem),
+    radial-gradient(circle at 18% 82%, rgba(157, 178, 191, 0.06), transparent 25rem),
+    var(--bg) !important;
+  color: var(--fg);
+  font-family: "Vazirmatn", "Inter", system-ui, sans-serif !important;
+}
+
 #react-root,
-#page-container,
-#reactivity,
-.toolbar_background,
-.welcome,
-.toolbox-background,
-.dialog,
-.overlay-container {
-  background-color: var(--background) !important;
-  color: var(--foreground) !important;
+#page-container {
+  background: transparent !important;
+  color: var(--fg) !important;
 }
 
-/* Header / Toolbar */
+/* ---- Glass surface helper ---- */
+.glass {
+  background: var(--surface-soft) !important;
+  backdrop-filter: blur(var(--blur)) saturate(1.15);
+  -webkit-backdrop-filter: blur(var(--blur)) saturate(1.15);
+  border: 1px solid var(--border) !important;
+  box-shadow:
+    0 12px 38px rgba(8, 15, 25, 0.14),
+    inset 0 1px rgba(255, 255, 255, 0.08);
+}
+
+/* ============ HEADER / TOOLBAR ============ */
 .header,
 .toolbox,
-.toolbar_background {
-  background-color: var(--background-alt) !important;
+.toolbar_background,
+[class*="toolbar"] {
+  background: rgba(26, 35, 50, 0.85) !important;
+  backdrop-filter: blur(20px) saturate(1.2) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(1.2) !important;
+  border-color: var(--border) !important;
 }
 
 .header_button,
-.toolbox-button {
-  color: var(--foreground) !important;
+.toolbox-button,
+.toolbox-icon,
+.header-logo {
+  color: var(--fg) !important;
 }
 
 .header_button:hover,
-.toolbox-button:hover {
-  color: var(--accent) !important;
+.toolbox-button:hover,
+.toolbox-icon:hover {
+  color: #fff !important;
+  background: var(--surface-soft) !important;
 }
 
-/* Buttons */
+/* ============ BUTTONS ============ */
 button,
 .btn,
 .button-control,
+.control-button,
+[id*="button"],
+.action-btn {
+  border-radius: var(--radius) !important;
+  font-weight: 600 !important;
+  transition:
+    transform 180ms ease,
+    border-color 180ms ease,
+    background 180ms ease,
+    box-shadow 180ms ease !important;
+}
+
+button:not([class*="danger"]):not([class*="icon"]),
+.btn-primary,
 .control-button {
-  background-color: var(--accent-deep) !important;
-  color: var(--foreground) !important;
-  border-color: var(--accent) !important;
+  background: rgba(82, 109, 130, 0.6) !important;
+  color: var(--fg) !important;
+  border: 1px solid var(--accent) !important;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 
 button:hover,
 .btn:hover,
-.button-control:hover,
 .control-button:hover {
-  background-color: var(--accent) !important;
+  transform: translateY(-1px);
+  background: rgba(82, 109, 130, 0.8) !important;
+  box-shadow: 0 4px 16px rgba(82, 109, 130, 0.3);
 }
 
-/* Input fields */
+button:active {
+  transform: translateY(0);
+}
+
+/* ============ INPUTS ============ */
 input[type="text"],
 input[type="password"],
 input[type="email"],
-textarea {
-  background-color: var(--background-alt) !important;
-  color: var(--foreground) !important;
+input[type="number"],
+textarea,
+select {
+  background: rgba(26, 35, 50, 0.5) !important;
+  color: var(--fg) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius) !important;
+  padding: 0.6rem 0.9rem;
+  transition: border-color 180ms ease, box-shadow 180ms ease;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
   border-color: var(--accent) !important;
-}
-
-input[type="text"]:focus,
-input[type="password"]:focus,
-input[type="email"]:focus,
-textarea:focus {
-  border-color: var(--foreground) !important;
   outline: none !important;
-  box-shadow: 0 0 0 1px var(--accent) !important;
+  box-shadow: 0 0 0 3px rgba(82, 109, 130, 0.3) !important;
 }
 
-/* Prejoin page */
+/* ============ PREJOIN PAGE ============ */
 .prejoin,
-.prejoin-page {
-  background-color: var(--background) !important;
+.prejoin-page,
+#prejoin {
+  background: transparent !important;
 }
 
-.prejoin-page .prejoin-title {
-  color: var(--foreground) !important;
+.prejoin-page .prejoin-title,
+.prejoin-page h1 {
+  color: var(--fg) !important;
+  font-weight: 700 !important;
 }
 
-/* Lobby */
-.lobby {
-  background-color: var(--background) !important;
+.prejoin-page .prejoin-content {
+  background: var(--surface-soft) !important;
+  backdrop-filter: blur(var(--blur)) !important;
+  -webkit-backdrop-filter: blur(var(--blur)) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius-lg) !important;
+  box-shadow: 0 24px 60px rgba(8, 15, 25, 0.3);
+  padding: 2rem !important;
+}
+
+.prejoin-page .camera-preview,
+.prejoin-page .video-preview {
+  border-radius: var(--radius) !important;
+  border: 1px solid var(--border) !important;
+  overflow: hidden;
+}
+
+/* ============ LOBBY ============ */
+.lobby,
+.lobby-page {
+  background: transparent !important;
 }
 
 .lobby-container {
-  background-color: var(--background-alt) !important;
-  border-radius: 12px;
-  border: 1px solid var(--accent) !important;
+  background: var(--surface-soft) !important;
+  backdrop-filter: blur(var(--blur)) !important;
+  -webkit-backdrop-filter: blur(var(--blur)) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius-lg) !important;
+  box-shadow: 0 24px 60px rgba(8, 15, 25, 0.3);
+  padding: 2rem !important;
 }
 
-.lobby-title {
-  color: var(--foreground) !important;
+.lobby-title,
+.lobby-title h1 {
+  color: var(--fg) !important;
+  font-weight: 700 !important;
 }
 
-/* Chat */
+/* ============ CHAT ============ */
 .chat-container,
-#chat-container {
-  background-color: var(--background) !important;
+#chat-container,
+.chat {
+  background: rgba(26, 35, 50, 0.95) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  border-left: 1px solid var(--border) !important;
 }
 
 .chat-message {
-  color: var(--foreground) !important;
+  color: var(--fg) !important;
+  line-height: 1.6;
 }
 
 .chat-local {
-  background-color: var(--background-alt) !important;
-  border-radius: 8px;
+  background: var(--surface-soft) !important;
+  border-radius: var(--radius) !important;
+  padding: 0.5rem 0.8rem;
+  margin: 0.25rem 0;
 }
 
-/* Participant name tags */
-.participant-name {
-  color: var(--foreground) !important;
-  background-color: rgba(39, 55, 77, 0.8) !important;
-  border-radius: 4px;
+.chat-message-author {
+  color: var(--accent) !important;
+  font-weight: 600 !important;
 }
 
-/* Tiles */
+.chat-input-container input {
+  background: rgba(26, 35, 50, 0.5) !important;
+}
+
+/* ============ PARTICIPANT TILES ============ */
 video,
-.tile-container {
-  background-color: var(--background-alt) !important;
+.tile-container,
+.video-container,
+.thumbnail {
+  border-radius: var(--radius) !important;
+  background: var(--surface) !important;
 }
 
-/* Dialogs / modals */
+.participant-name,
+.display-name {
+  color: var(--fg) !important;
+  background: rgba(39, 55, 77, 0.85) !important;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-radius: 0.5rem !important;
+  padding: 0.2rem 0.6rem !important;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+/* Filmstrip */
+.filmstrip {
+  background: rgba(26, 35, 50, 0.85) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  border-top: 1px solid var(--border) !important;
+}
+
+.filmstrip-thumbnail {
+  border-radius: var(--radius) !important;
+  border: 1px solid transparent !important;
+  transition: border-color 200ms ease;
+}
+
+.filmstrip-thumbnail:hover,
+.filmstrip-thumbnail.selected {
+  border-color: var(--accent) !important;
+}
+
+/* ============ DIALOGS / MODALS ============ */
 .modal-dialog,
 .dialog-container,
-.dialog {
-  background-color: var(--background-alt) !important;
-  border: 1px solid var(--accent) !important;
-  border-radius: 12px;
+.dialog,
+.overlay {
+  background: transparent !important;
+}
+
+.modal-content,
+.dialog-content {
+  background: var(--surface) !important;
+  backdrop-filter: blur(24px) saturate(1.2) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(1.2) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius-lg) !important;
+  box-shadow:
+    0 24px 60px rgba(8, 15, 25, 0.4),
+    inset 0 1px rgba(255, 255, 255, 0.08) !important;
 }
 
 .modal-dialog-title,
 .dialog-title {
-  color: var(--foreground) !important;
+  color: var(--fg) !important;
+  font-weight: 700 !important;
 }
 
 .modal-dialog-text,
-.dialog-text {
-  color: var(--foreground) !important;
+.dialog-text,
+.dialog-subtitle {
+  color: var(--muted) !important;
 }
 
-/* Welcome page */
-.welcome-page {
-  background-color: var(--background) !important;
+/* ============ WELCOME PAGE ============ */
+.welcome,
+.welcome-page,
+#landingPage {
+  background: transparent !important;
 }
 
-.welcome-page .welcome-title {
-  color: var(--foreground) !important;
+.welcome-page .welcome-title,
+.welcome-page h1 {
+  color: var(--fg) !important;
+  font-weight: 700 !important;
 }
 
-/* Scrollbar */
+.welcome-page-card,
+.welcome-page .card {
+  background: var(--surface-soft) !important;
+  backdrop-filter: blur(var(--blur)) !important;
+  -webkit-backdrop-filter: blur(var(--blur)) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius-lg) !important;
+  box-shadow: 0 12px 38px rgba(8, 15, 25, 0.14);
+}
+
+/* ============ SETTINGS ============ */
+.settings-pane,
+.settings-dialog {
+  background: var(--surface) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius-lg) !important;
+}
+
+.settings-pane .setting-label,
+.settings-dialog label {
+  color: var(--fg) !important;
+}
+
+/* ============ TOOLTIPS ============ */
+.tooltip,
+[data-tooltip],
+.jitsi-tooltip {
+  background: var(--surface) !important;
+  color: var(--fg) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 0.5rem !important;
+  box-shadow: 0 8px 24px rgba(8, 15, 25, 0.3);
+  font-size: 0.85rem;
+}
+
+/* ============ DROPDOWN MENUS ============ */
+.dropdown-menu,
+.jitsi-dropdown,
+.popupmenu {
+  background: var(--surface) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius) !important;
+  box-shadow: 0 12px 38px rgba(8, 15, 25, 0.25);
+  overflow: hidden;
+}
+
+.dropdown-item,
+.jitsi-dropdown-item,
+.popupmenu-item {
+  color: var(--fg) !important;
+  transition: background 150ms ease;
+}
+
+.dropdown-item:hover,
+.jitsi-dropdown-item:hover,
+.popupmenu-item:hover {
+  background: var(--surface-soft) !important;
+}
+
+/* ============ NOTIFICATIONS ============ */
+.notification,
+.notification-container {
+  background: var(--surface) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  color: var(--fg) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius) !important;
+  box-shadow: 0 12px 38px rgba(8, 15, 25, 0.25);
+}
+
+/* ============ TIMER / INDICATORS ============ */
+.timer {
+  color: var(--fg) !important;
+  font-weight: 600;
+}
+
+.recording-indicator {
+  color: #f87171 !important;
+}
+
+/* ============ FOOTER ============ */
+.footer-container,
+footer {
+  background: rgba(26, 35, 50, 0.85) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  border-top: 1px solid var(--border) !important;
+}
+
+/* ============ SCROLLBAR ============ */
 ::-webkit-scrollbar {
   width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--background);
+  background: var(--bg);
 }
 
 ::-webkit-scrollbar-thumb {
@@ -171,61 +407,61 @@ video,
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--foreground);
+  background: var(--fg);
 }
 
-/* Tooltip */
-.tooltip {
-  background-color: var(--background-alt) !important;
-  color: var(--foreground) !important;
-  border: 1px solid var(--accent) !important;
+/* ============ PASSWORD / AUTH PAGE ============ */
+.password-page,
+.login-page,
+#login-page {
+  background: transparent !important;
 }
 
-/* Dropdown menus */
-.dropdown-menu,
-.jitsi-dropdown {
-  background-color: var(--background-alt) !important;
-  border: 1px solid var(--accent) !important;
+.login-page .login-container,
+.password-page .password-container {
+  background: var(--surface-soft) !important;
+  backdrop-filter: blur(var(--blur)) !important;
+  -webkit-backdrop-filter: blur(var(--blur)) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius-lg) !important;
+  box-shadow: 0 24px 60px rgba(8, 15, 25, 0.3);
+  padding: 2.5rem !important;
 }
 
-.dropdown-item,
-.jitsi-dropdown-item {
-  color: var(--foreground) !important;
+/* ============ REACTIONS / EMOJI ============ */
+.reactions-container,
+.reaction {
+  background: var(--surface) !important;
+  border: 1px solid var(--border) !important;
 }
 
-.dropdown-item:hover,
-.jitsi-dropdown-item:hover {
-  background-color: var(--accent) !important;
-}
-
-/* Settings panel */
-.settings-pane {
-  background-color: var(--background) !important;
-}
-
-/* Notifications */
-.notification {
-  background-color: var(--background-alt) !important;
-  color: var(--foreground) !important;
-  border: 1px solid var(--accent) !important;
-}
-
-/* Video quality indicator */
+/* ============ QUALITY INDICATOR ============ */
+.connection-indicator,
 .video-quality-label {
-  color: var(--foreground) !important;
+  color: var(--muted) !important;
+  font-size: 0.75rem;
 }
 
-/* Recording indicator */
-.recording-indicator {
-  color: #f87171 !important;
+/* ============ FOCUS RING ============ */
+*:focus-visible {
+  outline: none !important;
+  box-shadow: 0 0 0 3px rgba(82, 109, 130, 0.3) !important;
 }
 
-/* Timer */
-.timer {
-  color: var(--foreground) !important;
+/* ============ SELECTION ============ */
+::selection {
+  background: rgba(82, 109, 130, 0.4);
+  color: var(--fg);
 }
 
-/* Footer */
-.footer-container {
-  background-color: var(--background-alt) !important;
+/* ============ ANIMATIONS ============ */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.prejoin-page,
+.lobby-container,
+.welcome-page {
+  animation: fadeIn 300ms ease-out;
 }
