@@ -3,7 +3,7 @@ import { marked } from "marked";
 import hljs from "highlight.js";
 
 const allowedTags = [
-  "p", "br", "h2", "h3", "strong", "b", "em", "i", "u", "s",
+  "p", "br", "h1", "h2", "h3", "strong", "b", "em", "i", "u", "s",
   "ul", "ol", "li", "blockquote", "pre", "code", "a", "img", "hr",
   "table", "thead", "tbody", "tr", "th", "td", "span",
 ];
@@ -11,6 +11,7 @@ const allowedTags = [
 function looksLikeMarkdown(content: string): boolean {
   if (/^#{1,3}\s/m.test(content)) return true;
   if (/```/m.test(content)) return true;
+  if (/<pre[^>]*class="code"/i.test(content)) return true;
   if (/^\s*[-*+]\s/m.test(content)) return true;
   if (/^\s*\d+\.\s/m.test(content)) return true;
   if (/^\|.*\|/m.test(content)) return true;
@@ -50,19 +51,32 @@ marked.use({ extensions: [highlightExtension] });
 marked.setOptions({ breaks: true, gfm: true });
 
 function stripCmsHtml(html: string): string {
-  return html
-    .replace(/<\/?pre[^>]*>/gi, "")
+  let result = html
+    .replace(/<div[^>]*>/gi, "")
+    .replace(/<\/div>/gi, "")
     .replace(/<br\s*\/?>/gi, "\n")
     .replace(/&gt;/g, ">")
     .replace(/&lt;/g, "<")
     .replace(/&amp;/g, "&")
     .replace(/&nbsp;/g, " ");
+
+  result = result.replace(
+    /<pre[^>]*class="code"[^>]*>([\s\S]*?)<\/pre>/gi,
+    (_match, code: string) => `\n\`\`\`\n${code.trim()}\n\`\`\`\n`
+  );
+
+  result = result.replace(/<\/?pre[^>]*>/gi, "");
+
+  return result;
 }
 
 export function sanitizeArticleContent(content: string) {
   let source: string;
 
-  if (/<[a-z][\s\S]*>/i.test(content) && !looksLikeMarkdown(content)) {
+  if (/<pre[^>]*class="code"/i.test(content)) {
+    const stripped = stripCmsHtml(content);
+    source = marked.parse(stripped) as string;
+  } else if (/<[a-z][\s\S]*>/i.test(content) && !looksLikeMarkdown(content)) {
     source = content;
   } else if (looksLikeMarkdown(content)) {
     const stripped = stripCmsHtml(content);
