@@ -1,6 +1,5 @@
-/* ============================================================
-   Portfolio Theme for Jitsi Meet — matches rezabarzakhi.ir
-   ============================================================ */
+<style>
+/* Portfolio Theme for Jitsi Meet — matches rezabarzakhi.ir */
 @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700&display=swap');
 
 :root {
@@ -76,7 +75,8 @@ button,
 .button-control,
 .control-button,
 [id*="button"],
-.action-btn {
+.action-btn,
+.welcome-page-button {
   border-radius: var(--radius) !important;
   font-weight: 600 !important;
   transition:
@@ -289,24 +289,110 @@ video,
 /* ============ WELCOME PAGE ============ */
 .welcome,
 .welcome-page,
-#landingPage {
+#landingPage,
+.welcome-page-container {
   background: transparent !important;
 }
 
 .welcome-page .welcome-title,
-.welcome-page h1 {
+.welcome-page h1,
+.welcome-page-container h1 {
   color: var(--fg) !important;
   font-weight: 700 !important;
+  letter-spacing: -0.02em;
 }
 
 .welcome-page-card,
-.welcome-page .card {
+.welcome-page .card,
+.welcome-cards-container {
   background: var(--surface-soft) !important;
   backdrop-filter: blur(var(--blur)) !important;
   -webkit-backdrop-filter: blur(var(--blur)) !important;
   border: 1px solid var(--border) !important;
   border-radius: var(--radius-lg) !important;
   box-shadow: 0 12px 38px rgba(8, 15, 25, 0.14);
+  color: var(--fg) !important;
+}
+
+/* Welcome page input and button row */
+.enter-room-input {
+  background: rgba(26, 35, 50, 0.5) !important;
+  color: var(--fg) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius) 0 0 var(--radius) !important;
+  font-size: 1rem !important;
+}
+
+.enter-room-input::placeholder {
+  color: var(--muted) !important;
+}
+
+.welcome-page-button {
+  background: rgba(82, 109, 130, 0.7) !important;
+  color: var(--fg) !important;
+  border: 1px solid var(--accent) !important;
+  border-radius: 0 var(--radius) var(--radius) 0 !important;
+  font-weight: 700 !important;
+  padding: 0.75rem 1.5rem !important;
+  transition: background 180ms ease, box-shadow 180ms ease, transform 180ms ease !important;
+}
+
+.welcome-page-button:hover {
+  background: rgba(82, 109, 130, 0.95) !important;
+  box-shadow: 0 4px 16px rgba(82, 109, 130, 0.4) !important;
+  transform: translateY(-1px);
+}
+
+/* Settings gear */
+.settings-button,
+[aria-label*="settings"],
+[aria-label*="Open settings"] {
+  background: var(--surface-soft) !important;
+  color: var(--fg) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 50% !important;
+}
+
+.settings-button:hover,
+[aria-label*="settings"]:hover {
+  background: var(--accent) !important;
+}
+
+/* Welcome page subtitle */
+.welcome-page-container [class*="subtitle"],
+.welcome-page-container [class*="description"] {
+  color: var(--muted) !important;
+}
+
+/* Welcome tabs / meetings card */
+.welcome-card,
+.welcome-card--blue,
+.welcome-tabs {
+  background: var(--surface-soft) !important;
+  backdrop-filter: blur(var(--blur)) !important;
+  -webkit-backdrop-filter: blur(var(--blur)) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius-lg) !important;
+  box-shadow: 0 12px 38px rgba(8, 15, 25, 0.14);
+}
+
+.welcome-card-column {
+  background: transparent !important;
+}
+
+.tab-container,
+.tab-content {
+  background: transparent !important;
+  color: var(--fg) !important;
+}
+
+.meetings-list,
+.meetings-list-empty {
+  color: var(--muted) !important;
+}
+
+.meetings-list-empty .description {
+  color: var(--muted) !important;
 }
 
 /* ============ SETTINGS ============ */
@@ -465,3 +551,4 @@ footer {
 .welcome-page {
   animation: fadeIn 300ms ease-out;
 }
+</style>
