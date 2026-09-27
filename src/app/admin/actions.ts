@@ -20,6 +20,63 @@ export type FormState = {
   errors?: Record<string, string>;
 } | null;
 
+const FIELD_LABELS: Record<string, string> = {
+  slug: "اسلاگ",
+  titleFa: "عنوان فارسی",
+  titleEn: "عنوان انگلیسی",
+  excerptFa: "خلاصه فارسی",
+  excerptEn: "خلاصه انگلیسی",
+  contentFa: "محتوای فارسی",
+  contentEn: "محتوای انگلیسی",
+  categoryFa: "دسته فارسی",
+  categoryEn: "دسته انگلیسی",
+  tags: "برچسب‌ها",
+  imageUrl: "نشانی تصویر",
+  imageAltFa: "متن جایگزین تصویر فارسی",
+  imageAltEn: "متن جایگزین تصویر انگلیسی",
+  seoTitleFa: "عنوان SEO فارسی",
+  seoTitleEn: "عنوان SEO انگلیسی",
+  seoDescriptionFa: "توضیحات SEO فارسی",
+  seoDescriptionEn: "توضیحات SEO انگلیسی",
+  canonicalUrl: "نشانی مرجع",
+  featured: "منتخب",
+  allowIndex: "اجازه ایندکس",
+  published: "انتشار",
+  nameFa: "نام فارسی",
+  nameEn: "نام انگلیسی",
+  roleFa: "عنوان حرفه‌ای فارسی",
+  roleEn: "عنوان حرفه‌ای انگلیسی",
+  introFa: "معرفی فارسی",
+  introEn: "معرفی انگلیسی",
+  aboutFa: "درباره فارسی",
+  aboutEn: "درباره انگلیسی",
+  locationFa: "موقعیت فارسی",
+  locationEn: "موقعیت انگلیسی",
+  availabilityFa: "وضعیت همکاری فارسی",
+  availabilityEn: "وضعیت همکاری انگلیسی",
+  email: "ایمیل",
+  phone: "تلفن",
+  heroImage: "تصویر اصلی",
+  aboutImage: "تصویر درباره من",
+  githubUrl: "گیت‌هاب",
+  instagramUrl: "اینستاگرام",
+  telegramUrl: "تلگرام",
+  twitterUrl: "توییتر",
+  name: "نام",
+  sortOrder: "ترتیب",
+  summaryFa: "خلاصه فارسی",
+  summaryEn: "خلاصه انگلیسی",
+  technologies: "فناوری‌ها",
+  liveUrl: "نسخه زنده",
+  repositoryUrl: "مخزن کد",
+  organizationFa: "سازمان فارسی",
+  organizationEn: "سازمان انگلیسی",
+  periodFa: "دوره فارسی",
+  periodEn: "دوره انگلیسی",
+  descriptionFa: "توضیح فارسی",
+  descriptionEn: "توضیح انگلیسی",
+};
+
 function formatZodError(error: ZodError): { message: string; errors: Record<string, string> } {
   const errors: Record<string, string> = {};
   for (const issue of error.issues) {
@@ -28,11 +85,18 @@ function formatZodError(error: ZodError): { message: string; errors: Record<stri
       errors[field] = issue.message;
     }
   }
-  const fieldCount = Object.keys(errors).length;
+  const entries = Object.entries(errors);
+  const fieldCount = entries.length;
+  if (fieldCount === 0) {
+    return { message: "خطای اعتبارسنجی نامشخص.", errors };
+  }
+  const fieldNames = entries.slice(0, 5).map(([f]) => FIELD_LABELS[f] || f);
+  const suffix = fieldCount > 5 ? ` و ${fieldCount - 5} فیلد دیگر` : "";
+  const list = fieldNames.join("، ") + suffix;
   return {
     message: fieldCount === 1
-      ? `یک فیلد اشتباه است: ${Object.values(errors)[0]}`
-      : `${fieldCount} فیلد اشتباه هستند. لطفاً فیلدها را بررسی کنید.`,
+      ? `${fieldNames[0]} اشتباه است: ${entries[0][1]}`
+      : `${list} اشتباه هستند.`,
     errors,
   };
 }

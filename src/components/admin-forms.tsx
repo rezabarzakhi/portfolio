@@ -19,6 +19,16 @@ function FormToast({ state }: { state: FormState }) {
       router.refresh();
     } else {
       toast.error(state.message, { long: true });
+      const firstField = Object.keys(state.errors || {})[0];
+      if (firstField) {
+        requestAnimationFrame(() => {
+          const el = document.querySelector(`[name="${firstField}"]`);
+          if (el) {
+            el.scrollIntoView({ behavior: "smooth", block: "center" });
+            if (el instanceof HTMLElement) el.focus();
+          }
+        });
+      }
     }
   }, [state, router]);
   return null;
