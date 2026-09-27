@@ -21,6 +21,40 @@ turndown.addRule("keepImages", {
   },
 });
 
+turndown.addRule("cmsCodeBlock", {
+  filter(node) {
+    return (
+      node.nodeName === "PRE" &&
+      node instanceof HTMLElement &&
+      node.classList.contains("code")
+    );
+  },
+  replacement(_content, node) {
+    const el = node as HTMLElement;
+    const text = el.textContent || "";
+    return `\n\`\`\`\n${text.trim()}\n\`\`\`\n`;
+  },
+});
+
+function preprocessCmsContent(text: string): string {
+  let result = text
+    .replace(/<div[^>]*>/gi, "")
+    .replace(/<\/div>/gi, "")
+    .replace(/&gt;/g, ">")
+    .replace(/&lt;/g, "<")
+    .replace(/&amp;/g, "&")
+    .replace(/&nbsp;/g, " ");
+
+  result = result.replace(
+    /<pre[^>]*class="code"[^>]*>([\s\S]*?)<\/pre>/gi,
+    (_match, code: string) => `\n\`\`\`\n${code.trim()}\n\`\`\`\n`
+  );
+
+  result = result.replace(/<\/?pre[^>]*>/gi, "");
+
+  return result;
+}
+
 marked.setOptions({ breaks: true, gfm: true });
 
 const tools = [
@@ -51,11 +85,11 @@ function EditorToolbar({ onExecCommand, onToggleMode, mode }: { onExecCommand: (
 
   return (
     <div className="flex flex-wrap items-center gap-1 border-b border-white/10 p-2">
-      {mode === "visual" && (
-        <select className="rounded-lg bg-[#27374d] px-2 text-xs" defaultValue="p" onChange={(event) => onExecCommand("formatBlock", event.target.value)} aria-label="نوع متن">
-          <option value="p">متن</option><option value="h2">تیتر اصلی</option><option value="h3">زیرتیتر</option>
-        </select>
-      )}
+        {mode === "visual" && (
+          <select className="rounded-lg bg-[#27374d] px-2 text-xs" defaultValue="p" onChange={(event) => onExecCommand("formatBlock", event.target.value)} aria-label="نوع متن">
+            <option value="p">متن</option><option value="h1">تیتر بزرگ</option><option value="h2">تیتر اصلی</option><option value="h3">زیرتیتر</option>
+          </select>
+        )}
       {mode === "visual" && tools.map(([title, Icon, toolCommand, value]) => <button key={title} type="button" title={title} aria-label={title} onMouseDown={(event) => { event.preventDefault(); handleTool(toolCommand, value); }} className="grid size-9 place-items-center rounded-lg text-gray-300 hover:bg-white/10 hover:text-white"><Icon size={16} /></button>)}
       <button type="button" title="تبدیل به Markdown" aria-label="تبدیل به Markdown" onClick={onToggleMode} className={`ms-auto grid size-9 place-items-center rounded-lg hover:bg-white/10 ${mode === "markdown" ? "text-emerald-400" : "text-gray-300 hover:text-white"}`}><FileText size={16} /></button>
     </div>
@@ -106,6 +140,15 @@ export function RichTextEditor({ name, label, initialValue = "", direction }: { 
             dir={direction}
             suppressContentEditableWarning
             dangerouslySetInnerHTML={{ __html: initialValue }}
+            onPaste={(event) => {
+              const text = event.clipboardData.getData("text");
+              if (/<pre[^>]*class="code"|<div[^>]*>/i.test(text)) {
+                event.preventDefault();
+                const processed = preprocessCmsContent(text);
+                const rendered = marked.parse(processed) as string;
+                document.execCommand("insertHTML", false, rendered);
+              }
+            }}
             onInput={(event) => setHtml(event.currentTarget.innerHTML)}
           />
         ) : (
@@ -114,9 +157,23 @@ export function RichTextEditor({ name, label, initialValue = "", direction }: { 
             style={{ overflowWrap: "break-word", wordBreak: "break-word", maxWidth: "100%" }}
             dir={direction}
             value={markdownText}
+            onPaste={(event) => {
+              const text = event.clipboardData.getData("text");
+              if (/<pre[^>]*class="code"|<div[^>]*>/i.test(text)) {
+                event.preventDefault();
+                const processed = preprocessCmsContent(text);
+                const start = event.currentTarget.selectionStart;
+                const end = event.currentTarget.selectionEnd;
+                const newValue = markdownText.slice(0, start) + processed + markdownText.slice(end);
+                setMarkdownText(newValue);
+                const rendered = marked.parse(newValue) as string;
+                setHtml(rendered);
+              }
+            }}
             onChange={(event) => {
-              setMarkdownText(event.target.value);
-              const rendered = marked.parse(event.target.value) as string;
+              const val = event.target.value;
+              setMarkdownText(val);
+              const rendered = marked.parse(val) as string;
               setHtml(rendered);
             }}
             spellCheck={false}
