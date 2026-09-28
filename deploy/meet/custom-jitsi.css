@@ -16,49 +16,73 @@
   --blur: 18px;
 }
 
-/* ---- Ambient background ---- */
-body {
-  background:
+/* ============ BASE — override Jitsi's all.css cascade ============ */
+html,
+body,
+body.welcome-page,
+body[dir="rtl"] {
+  background: var(--bg) !important;
+  background-image:
     radial-gradient(circle at 8% 18%, rgba(157, 178, 191, 0.08), transparent 24rem),
     radial-gradient(circle at 92% 48%, rgba(82, 109, 130, 0.1), transparent 28rem),
-    radial-gradient(circle at 18% 82%, rgba(157, 178, 191, 0.06), transparent 25rem),
-    var(--bg) !important;
-  color: var(--fg);
+    radial-gradient(circle at 18% 82%, rgba(157, 178, 191, 0.06), transparent 25rem) !important;
+  background-attachment: fixed !important;
+  color: var(--fg) !important;
   font-family: "Vazirmatn", "Inter", system-ui, sans-serif !important;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
 }
 
-#react-root,
-#page-container {
+#react,
+#layout_wrapper,
+#welcome_page,
+.welcome-page,
+.welcome,
+[class*="welcome-page"] {
   background: transparent !important;
   color: var(--fg) !important;
 }
 
-/* ---- Glass surface helper ---- */
-.glass {
-  background: var(--surface-soft) !important;
-  backdrop-filter: blur(var(--blur)) saturate(1.15);
-  -webkit-backdrop-filter: blur(var(--blur)) saturate(1.15);
-  border: 1px solid var(--border) !important;
-  box-shadow:
-    0 12px 38px rgba(8, 15, 25, 0.14),
-    inset 0 1px rgba(255, 255, 255, 0.08);
+/* Fix white background on main container */
+#welcome_page.welcome {
+  background-color: var(--bg) !important;
 }
 
-/* ============ HEADER / TOOLBAR ============ */
+::selection {
+  background: rgba(82, 109, 130, 0.4);
+  color: var(--fg);
+}
+
+*:focus-visible {
+  outline: none !important;
+  box-shadow: 0 0 0 3px rgba(82, 109, 130, 0.3) !important;
+}
+
+/* ============ HEADER — glass morphism ============ */
 .header,
+.header-container,
 .toolbox,
+.toolbox-content,
 .toolbar_background,
 [class*="toolbar"] {
-  background: rgba(26, 35, 50, 0.85) !important;
+  background: rgba(26, 35, 50, 0.7) !important;
   backdrop-filter: blur(20px) saturate(1.2) !important;
   -webkit-backdrop-filter: blur(20px) saturate(1.2) !important;
-  border-color: var(--border) !important;
+  border-bottom: 1px solid var(--border) !important;
+}
+
+.header-watermark-container,
+.welcome-watermark,
+.watermark,
+.leftwatermark,
+.header-image {
+  display: none !important;
 }
 
 .header_button,
 .toolbox-button,
-.toolbox-icon,
-.header-logo {
+.toolbox-icon {
   color: var(--fg) !important;
 }
 
@@ -66,19 +90,61 @@ body {
 .toolbox-button:hover,
 .toolbox-icon:hover {
   color: #fff !important;
-  background: var(--surface-soft) !important;
+  background: rgba(82, 109, 130, 0.3) !important;
+}
+
+/* ============ WELCOME PAGE TITLE ============ */
+.welcome-page-heading,
+[class*="welcome-page-heading"] {
+  color: var(--fg) !important;
+  font-weight: 700 !important;
+  font-family: "Vazirmatn", "Inter", system-ui, sans-serif !important;
+}
+
+.welcome-page-description,
+[class*="welcome-page-description"] {
+  color: var(--muted) !important;
+  font-family: "Vazirmatn", "Inter", system-ui, sans-serif !important;
+}
+
+/* ============ JOIN MEETING CONTAINER ============ */
+.join-meeting-container {
+  background: transparent !important;
+}
+
+/* ============ INPUT + BUTTON ROW ============ */
+.enter-room-input,
+.join-meeting-container input {
+  background: rgba(26, 35, 50, 0.5) !important;
+  color: var(--fg) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius) 0 0 var(--radius) !important;
+  font-family: "Vazirmatn", "Inter", system-ui, sans-serif !important;
+  font-size: 0.95rem !important;
+  padding: 0.65rem 1rem !important;
+  min-height: 3rem !important;
+  transition: border-color 180ms ease, box-shadow 180ms ease;
+}
+
+.enter-room-input:focus,
+.join-meeting-container input:focus {
+  border-color: var(--accent) !important;
+  outline: none !important;
+  box-shadow: 0 0 0 3px rgba(82, 109, 130, 0.25) !important;
+}
+
+.enter-room-input::placeholder {
+  color: var(--muted) !important;
+  opacity: 0.6;
 }
 
 /* ============ BUTTONS ============ */
 button,
 .btn,
-.button-control,
-.control-button,
-[id*="button"],
-.action-btn,
 .welcome-page-button {
   border-radius: var(--radius) !important;
   font-weight: 600 !important;
+  font-family: "Vazirmatn", "Inter", system-ui, sans-serif !important;
   transition:
     transform 180ms ease,
     border-color 180ms ease,
@@ -86,55 +152,98 @@ button,
     box-shadow 180ms ease !important;
 }
 
-button:not([class*="danger"]):not([class*="icon"]),
-.btn-primary,
-.control-button {
+.welcome-page-button {
   background: rgba(82, 109, 130, 0.6) !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
   color: var(--fg) !important;
   border: 1px solid var(--accent) !important;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  min-height: 3rem !important;
+  font-size: 0.95rem !important;
+  font-weight: 700 !important;
+  border-radius: 0 var(--radius) var(--radius) 0 !important;
+  padding: 0.75rem 1.8rem !important;
+  letter-spacing: -0.01em;
 }
 
-button:hover,
-.btn:hover,
-.control-button:hover {
-  transform: translateY(-1px);
+.welcome-page-button:hover {
   background: rgba(82, 109, 130, 0.8) !important;
-  box-shadow: 0 4px 16px rgba(82, 109, 130, 0.3);
+  box-shadow: 0 4px 16px rgba(82, 109, 130, 0.3) !important;
+  transform: translateY(-2px) !important;
 }
 
-button:active {
-  transform: translateY(0);
-}
-
-/* ============ INPUTS ============ */
-input[type="text"],
-input[type="password"],
-input[type="email"],
-input[type="number"],
-textarea,
-select {
-  background: rgba(26, 35, 50, 0.5) !important;
+.button-secondary,
+.control-button,
+.toolbox-button {
+  background: transparent !important;
   color: var(--fg) !important;
   border: 1px solid var(--border) !important;
-  border-radius: var(--radius) !important;
-  padding: 0.6rem 0.9rem;
-  transition: border-color 180ms ease, box-shadow 180ms ease;
 }
 
-input:focus,
-textarea:focus,
-select:focus {
+.button-secondary:hover,
+.control-button:hover,
+.toolbox-button:hover {
+  background: rgba(82, 109, 130, 0.3) !important;
   border-color: var(--accent) !important;
-  outline: none !important;
-  box-shadow: 0 0 0 3px rgba(82, 109, 130, 0.3) !important;
 }
 
-/* ============ PREJOIN PAGE ============ */
+/* ============ SETTINGS GEAR ============ */
+.welcome-page-settings,
+.settings-button,
+[aria-label*="settings"],
+[aria-label*="Open settings"] {
+  background: rgba(39, 55, 77, 0.6) !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+  color: var(--fg) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: 50% !important;
+}
+
+.welcome-page-settings:hover,
+[aria-label*="settings"]:hover {
+  background: rgba(82, 109, 130, 0.5) !important;
+}
+
+/* ============ CARDS — glass morphism ============ */
+.welcome-card,
+.welcome-card--blue,
+.welcome-tabs,
+.welcome-cards-container {
+  background: var(--surface-soft) !important;
+  backdrop-filter: blur(var(--blur)) saturate(1.15) !important;
+  -webkit-backdrop-filter: blur(var(--blur)) saturate(1.15) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius-lg) !important;
+  box-shadow:
+    0 12px 38px rgba(8, 15, 25, 0.14),
+    inset 0 1px rgba(255, 255, 255, 0.08) !important;
+}
+
+.welcome-card-column {
+  background: transparent !important;
+}
+
+.tab-container,
+.tab-content {
+  background: transparent !important;
+  color: var(--fg) !important;
+}
+
+.navigate-section-tile-title,
+.navigate-section-tile-body {
+  color: var(--fg) !important;
+}
+
+.meetings-list,
+.meetings-list-empty,
+.meetings-list-empty .description {
+  color: var(--muted) !important;
+}
+
+/* ============ PREJOIN ============ */
 .prejoin,
-.prejoin-page,
-#prejoin {
+.prejoin-page {
   background: transparent !important;
 }
 
@@ -142,6 +251,7 @@ select:focus {
 .prejoin-page h1 {
   color: var(--fg) !important;
   font-weight: 700 !important;
+  font-family: "Vazirmatn", "Inter", system-ui, sans-serif !important;
 }
 
 .prejoin-page .prejoin-content {
@@ -195,14 +305,13 @@ select:focus {
 
 .chat-message {
   color: var(--fg) !important;
-  line-height: 1.6;
+  line-height: 1.7;
 }
 
 .chat-local {
   background: var(--surface-soft) !important;
   border-radius: var(--radius) !important;
   padding: 0.5rem 0.8rem;
-  margin: 0.25rem 0;
 }
 
 .chat-message-author {
@@ -210,11 +319,7 @@ select:focus {
   font-weight: 600 !important;
 }
 
-.chat-input-container input {
-  background: rgba(26, 35, 50, 0.5) !important;
-}
-
-/* ============ PARTICIPANT TILES ============ */
+/* ============ TILES / VIDEO ============ */
 video,
 .tile-container,
 .video-container,
@@ -228,7 +333,6 @@ video,
   color: var(--fg) !important;
   background: rgba(39, 55, 77, 0.85) !important;
   backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
   border-radius: 0.5rem !important;
   padding: 0.2rem 0.6rem !important;
   font-size: 0.85rem;
@@ -254,7 +358,7 @@ video,
   border-color: var(--accent) !important;
 }
 
-/* ============ DIALOGS / MODALS ============ */
+/* ============ MODALS / DIALOGS ============ */
 .modal-dialog,
 .dialog-container,
 .dialog,
@@ -286,115 +390,6 @@ video,
   color: var(--muted) !important;
 }
 
-/* ============ WELCOME PAGE ============ */
-.welcome,
-.welcome-page,
-#landingPage,
-.welcome-page-container {
-  background: transparent !important;
-}
-
-.welcome-page .welcome-title,
-.welcome-page h1,
-.welcome-page-container h1 {
-  color: var(--fg) !important;
-  font-weight: 700 !important;
-  letter-spacing: -0.02em;
-}
-
-.welcome-page-card,
-.welcome-page .card,
-.welcome-cards-container {
-  background: var(--surface-soft) !important;
-  backdrop-filter: blur(var(--blur)) !important;
-  -webkit-backdrop-filter: blur(var(--blur)) !important;
-  border: 1px solid var(--border) !important;
-  border-radius: var(--radius-lg) !important;
-  box-shadow: 0 12px 38px rgba(8, 15, 25, 0.14);
-  color: var(--fg) !important;
-}
-
-/* Welcome page input and button row */
-.enter-room-input {
-  background: rgba(26, 35, 50, 0.5) !important;
-  color: var(--fg) !important;
-  border: 1px solid var(--border) !important;
-  border-radius: var(--radius) 0 0 var(--radius) !important;
-  font-size: 1rem !important;
-}
-
-.enter-room-input::placeholder {
-  color: var(--muted) !important;
-}
-
-.welcome-page-button {
-  background: rgba(82, 109, 130, 0.7) !important;
-  color: var(--fg) !important;
-  border: 1px solid var(--accent) !important;
-  border-radius: 0 var(--radius) var(--radius) 0 !important;
-  font-weight: 700 !important;
-  padding: 0.75rem 1.5rem !important;
-  transition: background 180ms ease, box-shadow 180ms ease, transform 180ms ease !important;
-}
-
-.welcome-page-button:hover {
-  background: rgba(82, 109, 130, 0.95) !important;
-  box-shadow: 0 4px 16px rgba(82, 109, 130, 0.4) !important;
-  transform: translateY(-1px);
-}
-
-/* Settings gear */
-.settings-button,
-[aria-label*="settings"],
-[aria-label*="Open settings"] {
-  background: var(--surface-soft) !important;
-  color: var(--fg) !important;
-  border: 1px solid var(--border) !important;
-  border-radius: 50% !important;
-}
-
-.settings-button:hover,
-[aria-label*="settings"]:hover {
-  background: var(--accent) !important;
-}
-
-/* Welcome page subtitle */
-.welcome-page-container [class*="subtitle"],
-.welcome-page-container [class*="description"] {
-  color: var(--muted) !important;
-}
-
-/* Welcome tabs / meetings card */
-.welcome-card,
-.welcome-card--blue,
-.welcome-tabs {
-  background: var(--surface-soft) !important;
-  backdrop-filter: blur(var(--blur)) !important;
-  -webkit-backdrop-filter: blur(var(--blur)) !important;
-  border: 1px solid var(--border) !important;
-  border-radius: var(--radius-lg) !important;
-  box-shadow: 0 12px 38px rgba(8, 15, 25, 0.14);
-}
-
-.welcome-card-column {
-  background: transparent !important;
-}
-
-.tab-container,
-.tab-content {
-  background: transparent !important;
-  color: var(--fg) !important;
-}
-
-.meetings-list,
-.meetings-list-empty {
-  color: var(--muted) !important;
-}
-
-.meetings-list-empty .description {
-  color: var(--muted) !important;
-}
-
 /* ============ SETTINGS ============ */
 .settings-pane,
 .settings-dialog {
@@ -420,7 +415,7 @@ video,
   font-size: 0.85rem;
 }
 
-/* ============ DROPDOWN MENUS ============ */
+/* ============ DROPDOWNS ============ */
 .dropdown-menu,
 .jitsi-dropdown,
 .popupmenu {
@@ -468,6 +463,12 @@ video,
   color: #f87171 !important;
 }
 
+.connection-indicator,
+.video-quality-label {
+  color: var(--muted) !important;
+  font-size: 0.75rem;
+}
+
 /* ============ FOOTER ============ */
 .footer-container,
 footer {
@@ -475,6 +476,44 @@ footer {
   backdrop-filter: blur(16px) !important;
   -webkit-backdrop-filter: blur(16px) !important;
   border-top: 1px solid var(--border) !important;
+  color: var(--muted) !important;
+}
+
+.footer-container img,
+footer img {
+  opacity: 0.3 !important;
+  filter: grayscale(0.6) !important;
+  transition: opacity 200ms ease, filter 200ms ease;
+}
+
+.footer-container img:hover,
+footer img:hover {
+  opacity: 0.7 !important;
+  filter: grayscale(0) !important;
+}
+
+/* ============ PASSWORD / AUTH ============ */
+.password-page,
+.login-page {
+  background: transparent !important;
+}
+
+.login-page .login-container,
+.password-page .password-container {
+  background: var(--surface-soft) !important;
+  backdrop-filter: blur(var(--blur)) !important;
+  -webkit-backdrop-filter: blur(var(--blur)) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius-lg) !important;
+  box-shadow: 0 24px 60px rgba(8, 15, 25, 0.3);
+  padding: 2.5rem !important;
+}
+
+/* ============ REACTIONS ============ */
+.reactions-container,
+.reaction {
+  background: var(--surface) !important;
+  border: 1px solid var(--border) !important;
 }
 
 /* ============ SCROLLBAR ============ */
@@ -494,50 +533,6 @@ footer {
 
 ::-webkit-scrollbar-thumb:hover {
   background: var(--fg);
-}
-
-/* ============ PASSWORD / AUTH PAGE ============ */
-.password-page,
-.login-page,
-#login-page {
-  background: transparent !important;
-}
-
-.login-page .login-container,
-.password-page .password-container {
-  background: var(--surface-soft) !important;
-  backdrop-filter: blur(var(--blur)) !important;
-  -webkit-backdrop-filter: blur(var(--blur)) !important;
-  border: 1px solid var(--border) !important;
-  border-radius: var(--radius-lg) !important;
-  box-shadow: 0 24px 60px rgba(8, 15, 25, 0.3);
-  padding: 2.5rem !important;
-}
-
-/* ============ REACTIONS / EMOJI ============ */
-.reactions-container,
-.reaction {
-  background: var(--surface) !important;
-  border: 1px solid var(--border) !important;
-}
-
-/* ============ QUALITY INDICATOR ============ */
-.connection-indicator,
-.video-quality-label {
-  color: var(--muted) !important;
-  font-size: 0.75rem;
-}
-
-/* ============ FOCUS RING ============ */
-*:focus-visible {
-  outline: none !important;
-  box-shadow: 0 0 0 3px rgba(82, 109, 130, 0.3) !important;
-}
-
-/* ============ SELECTION ============ */
-::selection {
-  background: rgba(82, 109, 130, 0.4);
-  color: var(--fg);
 }
 
 /* ============ ANIMATIONS ============ */
