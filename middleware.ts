@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
+const CANONICAL_HOST = "rezabarzakhi.ir";
+const LEGACY_MEDIA_PREFIX = "/wp-content/";
+
 function isAdminRoute(pathname: string): boolean {
   return pathname.startsWith("/admin") && !pathname.startsWith("/admin/login");
 }
@@ -23,6 +26,18 @@ function getSessionToken(request: NextRequest): string | null {
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
+
+  const hostname = (request.headers.get("host") ?? "").split(":")[0].toLowerCase();
+  if (
+    hostname === `www.${CANONICAL_HOST}` &&
+    !pathname.startsWith(LEGACY_MEDIA_PREFIX) &&
+    !isStaticAsset(pathname)
+  ) {
+    const url = request.nextUrl.clone();
+    url.protocol = "https:";
+    url.host = CANONICAL_HOST;
+    return NextResponse.redirect(url, 308);
+  }
 
   if (isStaticAsset(pathname)) {
     return NextResponse.next();
