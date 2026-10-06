@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import type { Experience, Post, Project, SiteSetting, Skill } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 
@@ -26,8 +27,8 @@ export const defaultSetting: SiteSetting = {
   phone: "09159106742",
   availabilityFa: "آماده همکاری در پروژه‌های جدید",
   availabilityEn: "Available for new projects",
-  heroImage: "https://www.rezabarzakhi.ir/wp-content/uploads/2025/12/me.jpg",
-  aboutImage: "https://www.rezabarzakhi.ir/wp-content/uploads/2026/01/IMG_20210922_160307_463-1638x2048.jpg",
+  heroImage: "https://rezabarzakhi.ir/wp-content/uploads/2025/12/me.jpg",
+  aboutImage: "https://rezabarzakhi.ir/wp-content/uploads/2026/01/IMG_20210922_160307_463-1638x2048.jpg",
   logoUrl: "",
   faviconUrl: "",
   resumeUrl: null,
@@ -187,10 +188,12 @@ export const dictionary = {
     skillsTitle: "ابزارهایی برای تبدیل ایده به محصول",
     projectsLabel: "نمونه‌کارها",
     projectsTitle: "چند تجربه منتخب",
+    projectsDescription: "مروری بر نمونه‌کارهای منتخب من در طراحی و توسعه وب.",
     allProjects: "همه نمونه‌کارها",
     projectDetails: "مشاهده جزئیات",
     blogLabel: "یادداشت‌ها",
     blogTitle: "آموخته‌ها و تجربه‌ها",
+    blogDescription: "یادداشت‌ها و تجربه‌های من درباره طراحی وب، توسعه فرانت‌اند و ابزارهای هوش مصنوعی.",
     allPosts: "همه مقاله‌ها",
     readMore: "ادامه مطلب",
     contactLabel: "تماس",
@@ -226,10 +229,12 @@ export const dictionary = {
     skillsTitle: "Tools that turn ideas into products",
     projectsLabel: "Selected work",
     projectsTitle: "A few recent projects",
+    projectsDescription: "A look at selected web design and development projects.",
     allProjects: "All projects",
     projectDetails: "View case study",
     blogLabel: "Journal",
     blogTitle: "Lessons and observations",
+    blogDescription: "Notes and lessons on web design, frontend development and AI tools.",
     allPosts: "All articles",
     readMore: "Read article",
     contactLabel: "Contact",
@@ -252,3 +257,45 @@ export const dictionary = {
     footer: "Designed and developed by Reza Barzakhi",
   },
 } as const;
+
+type SectionPage = "blog" | "projects" | "about" | "contact" | "resume";
+
+/**
+ * Self-referencing metadata for locale section pages (blog index, projects
+ * index, about, contact, resume). Without this they inherit the home metadata
+ * from the locale layout, including its canonical URL.
+ */
+export function sectionMetadata(locale: Locale, section: SectionPage, title: string, description: string): Metadata {
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://rezabarzakhi.ir";
+  const url = `${siteUrl}/${locale}/${section}`;
+  const other: Locale = locale === "fa" ? "en" : "fa";
+  const ogImage = `${siteUrl}/og?title=${encodeURIComponent(title)}`;
+  return {
+    title,
+    description,
+    alternates: {
+      canonical: url,
+      languages: {
+        fa: `${siteUrl}/fa/${section}`,
+        en: `${siteUrl}/en/${section}`,
+        "x-default": `${siteUrl}/fa/${section}`,
+      },
+    },
+    openGraph: {
+      title,
+      description,
+      type: "website",
+      locale: locale === "fa" ? "fa_IR" : "en_US",
+      alternateLocale: other === "fa" ? "fa_IR" : "en_US",
+      url,
+      siteName: "Reza Barzakhi",
+      images: [{ url: ogImage, width: 1200, height: 630 }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [ogImage],
+    },
+  };
+}

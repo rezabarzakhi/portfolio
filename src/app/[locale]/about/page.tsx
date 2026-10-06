@@ -1,9 +1,18 @@
 import Image from "next/image";
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { PageHero } from "@/components/page-hero";
-import { dictionary, getPublicContent, isLocale } from "@/lib/content";
+import { dictionary, getPublicContent, isLocale, sectionMetadata } from "@/lib/content";
 
 export const dynamic = "force-dynamic";
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params;
+  if (!isLocale(locale)) return {};
+  const { setting } = await getPublicContent();
+  const t = dictionary[locale];
+  return sectionMetadata(locale, "about", t.aboutTitle, locale === "fa" ? setting.introFa : setting.introEn);
+}
 
 export default async function AboutPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;

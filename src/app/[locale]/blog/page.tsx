@@ -1,9 +1,17 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { PostCard } from "@/components/content-cards";
 import { PageHero } from "@/components/page-hero";
-import { dictionary, getPublicContent, isLocale } from "@/lib/content";
+import { dictionary, getPublicContent, isLocale, sectionMetadata } from "@/lib/content";
 
 export const dynamic = "force-dynamic";
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params;
+  if (!isLocale(locale)) return {};
+  const t = dictionary[locale];
+  return sectionMetadata(locale, "blog", t.blogTitle, t.blogDescription);
+}
 
 export default async function BlogPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;

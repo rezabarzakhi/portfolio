@@ -1,11 +1,19 @@
 import { Mail, MapPin, Phone } from "lucide-react";
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ContactForm } from "@/components/contact-form";
 import { PageHero } from "@/components/page-hero";
 import { SocialLinks } from "@/components/site-footer";
-import { dictionary, getPublicContent, isLocale } from "@/lib/content";
+import { dictionary, getPublicContent, isLocale, sectionMetadata } from "@/lib/content";
 
 export const dynamic = "force-dynamic";
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params;
+  if (!isLocale(locale)) return {};
+  const t = dictionary[locale];
+  return sectionMetadata(locale, "contact", t.contactTitle, t.contactDescription);
+}
 
 export default async function ContactPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
