@@ -14,7 +14,7 @@ export function SiteHeader({ locale, logoUrl }: { locale: Locale; logoUrl: strin
   const pathname = usePathname();
   const t = dictionary[locale];
   const alternateLocale = locale === "fa" ? "en" : "fa";
-  const alternatePath = pathname.replace(/^\/(fa|en)/, `/${alternateLocale}/`);
+  const alternatePath = pathname.replace(/^\/(fa|en)/, `/${alternateLocale}`);
   const onHome = pathname === `/${locale}`;
 
   const items = [
@@ -29,7 +29,7 @@ export function SiteHeader({ locale, logoUrl }: { locale: Locale; logoUrl: strin
     <header className="theme-header fixed inset-x-0 top-0 z-50 border-b border-white/5 backdrop-blur-md">
       <div className="container-shell flex h-20 items-center justify-between">
         <Link href={`/${locale}`} className="text-xl font-black tracking-tight" aria-label={t.nav.home}>
-          {logoUrl ? <Image src={logoUrl} alt="" width={160} height={48} className="h-10 w-auto object-contain" priority /> : <>&lt;<span className="text-gray-300">RB</span>/&gt;</>}
+          {logoUrl ? <Image src={logoUrl} alt={locale === "fa" ? "لوگوی رضا برزخی" : "Reza Barzakhi logo"} width={160} height={48} className="h-10 w-auto object-contain" priority /> : <>&lt;<span className="text-gray-300">RB</span>/&gt;</>}
         </Link>
         <nav className="hidden items-center gap-7 text-sm text-gray-300 lg:flex" aria-label="Main navigation">
           {items.map((item) => (

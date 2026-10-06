@@ -5,6 +5,7 @@ import { Code2 as Github, ExternalLink } from "lucide-react";
 import { notFound } from "next/navigation";
 import { JsonLd } from "@/components/json-ld";
 import { dictionary, getPublicContent, isLocale } from "@/lib/content";
+import { toAbsoluteUrl } from "@/lib/sanitize-content";
 
 export const dynamic = "force-dynamic";
 
@@ -51,7 +52,7 @@ export default async function ProjectPage({ params }: { params: Promise<{ locale
     "@type": "CreativeWork",
     name: title,
     description: locale === "fa" ? project.summaryFa : project.summaryEn,
-    image: project.imageUrl,
+    image: toAbsoluteUrl(siteUrl, project.imageUrl),
     url,
     dateCreated: project.completedAt?.toISOString(),
     creator: { "@type": "Person", name: setting.nameEn, url: siteUrl },

@@ -39,7 +39,7 @@ export function SiteFooter({ locale, setting }: { locale: Locale; setting: SiteS
     <footer className="border-t border-white/5 py-10">
       <div className="container-shell flex flex-col items-center justify-between gap-6 sm:flex-row">
         <Link href={`/${locale}`} className="font-black">
-          {setting.logoUrl ? <Image src={setting.logoUrl} alt="" width={128} height={40} className="h-8 w-auto object-contain" /> : <>&lt;<span className="text-gray-300">RB</span>/&gt;</>}
+          {setting.logoUrl ? <Image src={setting.logoUrl} alt={locale === "fa" ? "لوگوی رضا برزخی" : "Reza Barzakhi logo"} width={128} height={40} className="h-8 w-auto object-contain" /> : <>&lt;<span className="text-gray-300">RB</span>/&gt;</>}
         </Link>
         <p className="text-sm text-gray-500">{t.footer} · {new Date().getFullYear()}</p>
         <SocialLinks setting={setting} />

@@ -31,7 +31,7 @@ export async function generateMetadata({ params }: LayoutProps): Promise<Metadat
     title: { default: title, template: `%s | ${locale === "fa" ? setting.nameFa : setting.nameEn}` },
     description,
     alternates: {
-      canonical: "/",
+      canonical: `/${locale}`,
       languages: { fa: "/fa", en: "/en", "x-default": "/fa" },
     },
     icons: { icon: setting.faviconUrl || "/default-mark.svg" },

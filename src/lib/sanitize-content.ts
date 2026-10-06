@@ -70,8 +70,7 @@ function stripCmsHtml(html: string): string {
   return result;
 }
 
-export function sanitizeArticleContent(content: string) {
-  let source: string;
+export function sanitizeArticleContent(content: string) {  let source: string;
 
   if (/<pre[^>]*class="code"/i.test(content)) {
     const stripped = stripCmsHtml(content);
@@ -104,6 +103,36 @@ export function sanitizeArticleContent(content: string) {
         tagName: "a",
         attribs: { ...attribs, rel: "noopener noreferrer", target: attribs.target ?? "_blank" },
       }),
+      // Article pages already render the post title as the single <h1>,
+      // so headings inside the body copy are demoted to keep one <h1> per page.
+      h1: (_tagName, attribs) => ({ tagName: "h2", attribs }),
     },
   });
+}
+
+export function toAbsoluteUrl(siteUrl: string, value: string | null | undefined): string | undefined {
+  if (!value) return undefined;
+  if (/^https?:\/\//i.test(value)) return value;
+  return `${siteUrl}${value.startsWith("/") ? value : `/${value}`}`;
+}
+
+export type FaqPair = { question: string; answer: string };
+
+// Extracts question/answer pairs from the CMS "سوالات پرتکرار" pattern:
+// a paragraph whose bold lead ends with a question mark, followed by the answer.
+export function extractFaqPairs(html: string): FaqPair[] {
+  const pairs: FaqPair[] = [];
+  const pattern = /<p>\s*<strong>([^<]{4,300}?)<\/strong>\s*<br\s*\/?>\s*([\s\S]*?)<\/p>/gi;
+  let match: RegExpExecArray | null;
+  while ((match = pattern.exec(html)) !== null && pairs.length < 20) {
+    const question = match[1].trim();
+    const answer = match[2]
+      .replace(/<[^>]*>/g, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+    if (!/[؟?]/.test(question)) continue;
+    if (answer.length < 10) continue;
+    pairs.push({ question, answer: answer.slice(0, 1000) });
+  }
+  return pairs;
 }
