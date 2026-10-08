@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { JsonLd } from "@/components/json-ld";
+import { JsonLd, buildBreadcrumbJsonLd } from "@/components/json-ld";
 import { dictionary, getPublicContent, isLocale } from "@/lib/content";
 import { extractFaqPairs, sanitizeArticleContent, toAbsoluteUrl } from "@/lib/sanitize-content";
 
@@ -78,5 +78,12 @@ export default async function ArticlePage({ params }: { params: Promise<{ locale
       })),
     });
   }
+  jsonLd.push(
+    buildBreadcrumbJsonLd(siteUrl, [
+      { name: t.nav.home, path: `/${locale}` },
+      { name: t.nav.blog, path: `/${locale}/blog` },
+      { name: title, path: `/${locale}/blog/${slug}` },
+    ]),
+  );
   return <article className="pt-36 pb-24"><JsonLd data={jsonLd} /><div className="mx-auto w-[min(100%-2rem,52rem)]"><div className="article-meta flex flex-wrap items-center gap-4"><Link href={`/${locale}/blog`} className="text-sm text-gray-300 hover:text-white">{t.back}</Link><p className="eyebrow">{locale === "fa" ? post.categoryFa : post.categoryEn}</p></div><h1 className="mt-8 text-4xl font-bold leading-tight sm:text-6xl">{title}</h1>{post.publishedAt && <time className="mt-5 block text-sm text-gray-500">{new Intl.DateTimeFormat(locale === "fa" ? "fa-IR" : "en-US", { dateStyle: "long" }).format(post.publishedAt)}</time>}<div className="relative mt-10 aspect-[16/9] overflow-hidden rounded-2xl"><Image src={post.imageUrl} alt={imageAlt} fill className="object-cover" sizes="100vw" priority /></div><div className="prose-content mt-12" dangerouslySetInnerHTML={{ __html: sanitizedContent }} /></div></article>;
 }

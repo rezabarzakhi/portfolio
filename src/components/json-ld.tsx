@@ -8,3 +8,21 @@ export function JsonLd({ data }: { data: Record<string, unknown> | Record<string
     </>
   );
 }
+
+export interface BreadcrumbTrailItem {
+  name: string;
+  path: string;
+}
+
+export function buildBreadcrumbJsonLd(siteUrl: string, items: BreadcrumbTrailItem[]): Record<string, unknown> {
+  return {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: items.map((item, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      name: item.name,
+      item: `${siteUrl}${item.path}`,
+    })),
+  };
+}
