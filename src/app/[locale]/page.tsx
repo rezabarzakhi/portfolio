@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ContactFormLazy } from "@/components/contact-form-lazy";
+import { ContactForm } from "@/components/contact-form";
 import { ArrowLeft, ArrowRight, Download, Mail, MapPin } from "lucide-react";
 import { notFound } from "next/navigation";
 import { JsonLd } from "@/components/json-ld";
@@ -117,7 +117,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
       <section id="contact" className="ambient-section ambient-section-right section-alt section-space border-t border-white/5">
         <div className="container-shell grid gap-12 lg:grid-cols-[0.7fr_1fr]">
           <div><SectionHeading eyebrow={t.contactLabel} title={t.contactTitle} /><p className="mt-5 leading-8 text-gray-400">{t.contactDescription}</p><a href={`mailto:${setting.email}`} className="mt-7 inline-flex items-center gap-2 text-gray-200 hover:text-white"><Mail size={18} />{setting.email}</a></div>
-          <ContactFormLazy locale={locale} />
+          <ContactForm locale={locale} />
         </div>
       </section>
     </>
