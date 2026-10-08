@@ -33,7 +33,7 @@ restore_previous_release() {
 prune_superseded_images() {
   current_image="$1"
   backup_file="$2"
-  current_repo="$(printf '%s' "$current_image" | cut -d: -f1)"
+  current_repo="$(printf '%s' "$current_image" | cut -d: -f1 | sed 's|^docker\.io/||')"
   previous_image="$(grep -E '^APP_IMAGE=' "$backup_file" 2>/dev/null | tail -n 1 | cut -d= -f2- || true)"
 
   echo "Pruning superseded application images (keeping current and previous)..."
