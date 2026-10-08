@@ -1,6 +1,8 @@
 import type { MetadataRoute } from "next";
 import { getPublicContent, locales } from "@/lib/content";
 
+export const dynamic = "force-dynamic";
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = process.env.NEXT_PUBLIC_SITE_URL ?? "https://rezabarzakhi.ir";
   const { projects, posts } = await getPublicContent();

@@ -30,6 +30,22 @@ restore_previous_release() {
   compose up -d --no-deps app || true
 }
 
+prune_superseded_images() {
+  current_image="$1"
+  backup_file="$2"
+  current_repo="$(printf '%s' "$current_image" | cut -d: -f1)"
+  previous_image="$(grep -E '^APP_IMAGE=' "$backup_file" 2>/dev/null | tail -n 1 | cut -d= -f2- || true)"
+
+  echo "Pruning superseded application images (keeping current and previous)..."
+  docker images --format '{{.Repository}}:{{.Tag}}' "$current_repo" 2>/dev/null | while IFS= read -r old; do
+    case "$old" in
+      "$current_image"|"$previous_image"|*"<none>"*|"") ;;
+      *) docker rmi "$old" >/dev/null 2>&1 || true ;;
+    esac
+  done
+  docker image prune -f >/dev/null || true
+}
+
 echo "Pulling $image..."
 docker pull "$image"
 
@@ -63,7 +79,7 @@ while [ "$attempt" -lt 30 ]; do
 
   if [ "$status" = healthy ]; then
     echo "Deployment completed: $image"
-    docker image prune -f >/dev/null
+    prune_superseded_images "$image" "$backup"
     exit 0
   fi
 
