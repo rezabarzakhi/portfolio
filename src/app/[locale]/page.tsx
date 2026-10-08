@@ -1,14 +1,19 @@
 import Image from "next/image";
 import Link from "next/link";
+import { default as nextDynamic } from "next/dynamic";
 import { ArrowLeft, ArrowRight, Download, Mail, MapPin } from "lucide-react";
 import { notFound } from "next/navigation";
-import { ContactForm } from "@/components/contact-form";
-import { PostCard, ProjectCard } from "@/components/content-cards";
 import { JsonLd } from "@/components/json-ld";
+import { PostCard, ProjectCard } from "@/components/content-cards";
 import { PortraitFrame } from "@/components/portrait-frame";
 import { SectionHeading } from "@/components/section-heading";
 import { SocialLinks } from "@/components/site-footer";
 import { dictionary, getPublicContent, isLocale } from "@/lib/content";
+
+const ContactForm = nextDynamic(() => import("@/components/contact-form").then((mod) => mod.ContactForm), {
+  ssr: false,
+  loading: () => <div className="skeleton h-72 rounded-2xl" aria-hidden="true" />,
+});
 
 export const dynamic = "force-dynamic";
 
