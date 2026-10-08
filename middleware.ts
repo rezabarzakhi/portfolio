@@ -46,6 +46,13 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
+  // Serve the default locale directly at the apex instead of bouncing through
+  // a 307: one fewer round trip before first paint. The rendered page keeps
+  // canonical /fa so search engines still consolidate on the locale URL.
+  if (pathname === "/") {
+    return NextResponse.rewrite(new URL("/fa", request.url));
+  }
+
   if (isAdminRoute(pathname)) {
     const token = getSessionToken(request);
     if (!token) {
